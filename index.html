@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Database Project</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+        .card { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+        input, text-area, button { display: block; width: 100%; margin-bottom: 10px; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h2>Add New Record</h2>
+    <form id="dataForm">
+        <input type="text" id="title" placeholder="Record Title" required>
+        <input type="text" id="content" placeholder="Record Content" required>
+        <button type="submit">Submit to Database</button>
+    </form>
+
+    <h2>Database Records</h2>
+    <div id="recordsContainer">Loading...</div>
+
+    <script>
+        // IMPORTANT: URL with my specific Vercel deployment URL
+        const VERCEL_API_URL = 'https://student-api-backend-one.vercel.app/api';
+
+        // Function to fetch and display records
+        async function loadRecords() {
+            try {
+                const response = await fetch(VERCEL_API_URL);
+                const records = await response.json();
+
+                const container = document.getElementById('recordsContainer');
+                container.innerHTML = '';
+
+                if(records.length === 0) {
+                    container.innerHTML = '<p>No records found.</p>';
+                    return;
+                }
+
+                records.forEach(record => {
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    div.innerHTML = `<strong>${record.title}</strong><br>${record.content}`;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                document.getElementById('recordsContainer').innerText = 'Error loading records.';
+            }
+        }
+
+        // Function to handle form submission
+        document.getElementById('dataForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+
+            try {
+                await fetch(VERCEL_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, content })
+                });
+
+                // Clear form and reload records
+                document.getElementById('dataForm').reset();
+                loadRecords();
+            } catch (error) {
+                alert('Failed to submit record.');
+            }
+        });
+
+        // Initial load
+        loadRecords();
+    </script>
+</body>
+</html>
