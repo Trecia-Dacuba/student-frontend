@@ -3,156 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Record Board</title>
+<title>Lab Attendance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f2f8f7; --surface:#ffffff; --ink:#0c2a33; --muted:#547079; --line:#d5e5e3;
-  --a:#0d9488; --b:#2563eb; --pop:#f59e0b; --bad:#d94646; --soft:#e2f4f1;
-  --shadow:0 2px 4px rgba(12,42,51,.05),0 12px 32px rgba(12,42,51,.08);
-  --font:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#07181d; --surface:#0e2a31; --ink:#e6f5f3; --muted:#8fb2b8; --line:#1d4047;
-  --a:#2dd4bf; --b:#60a5fa; --pop:#fbbf24; --bad:#ff8c8c; --soft:#12373e;
-  --shadow:0 2px 4px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
-}
+:root{--bg:#f2f8f7;--surface:#fff;--ink:#0c2a33;--muted:#547079;--line:#d5e5e3;--a:#0d9488;--b:#2563eb;--pop:#f59e0b;--soft:#e2f4f1;
+ --shadow:0 2px 4px rgba(12,42,51,.05),0 12px 32px rgba(12,42,51,.08);
+ --font:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#07181d;--surface:#0e2a31;--ink:#e6f5f3;--muted:#8fb2b8;--line:#1d4047;--a:#2dd4bf;--b:#60a5fa;--pop:#fbbf24;--soft:#12373e;
+ --shadow:0 2px 4px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35)}
 *{box-sizing:border-box}
 html{height:100%}
-body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5;transition:background .3s,color .3s;
-  padding-bottom:env(safe-area-inset-bottom,0)}
-/* hero */
-.hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(120deg,#0f766e,#0d9488 40%,#2563eb);
-  padding:calc(36px + env(safe-area-inset-top,0px)) 24px 96px}
-.blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.28;background:#fff;animation:float 9s ease-in-out infinite}
-.b1{width:280px;height:280px;right:-60px;top:-90px}
-.b2{width:160px;height:160px;left:8%;bottom:-70px;background:var(--pop);animation-delay:-3s}
-.b3{width:90px;height:90px;right:26%;bottom:20px;animation-delay:-6s}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.5;transition:background .3s,color .3s;padding-bottom:env(safe-area-inset-bottom,0)}
+.hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(120deg,#0f766e,#0d9488 40%,#2563eb);padding:calc(36px + env(safe-area-inset-top,0px)) 24px 96px}
+.blob{position:absolute;border-radius:50%;opacity:.26;background:#fff;animation:float 9s ease-in-out infinite}
+.b1{width:280px;height:280px;right:-60px;top:-90px}.b2{width:150px;height:150px;left:8%;bottom:-70px;background:var(--pop);animation-delay:-3s}
 @keyframes float{50%{transform:translate(18px,-22px) scale(1.06)}}
-.hero-in{position:relative;max-width:1400px;margin:0 auto}
+.hero-in,.stats,.layout{max-width:1400px;margin-left:auto;margin-right:auto}
+.hero-in{position:relative}
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.brand{font-weight:800;font-size:1.05rem;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
+.brand{font-weight:800;display:flex;align-items:center;gap:10px}
 .logo{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--a);display:grid;place-items:center;font-weight:800;animation:wob 5s ease-in-out infinite}
 @keyframes wob{50%{transform:rotate(-8deg) scale(1.05)}}
 .tools{display:flex;gap:10px;align-items:center}
 .pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);font-size:.875rem}
 .dot{width:9px;height:9px;border-radius:50%;background:#cbd5e1}
-.pill.ok .dot{background:#5eead4;animation:pulse 1.8s infinite}
-.pill.bad .dot{background:#fca5a5}
+.pill.ok .dot{background:#5eead4;animation:pulse 1.8s infinite}.pill.bad .dot{background:#fca5a5}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,234,212,.7)}100%{box-shadow:0 0 0 10px rgba(94,234,212,0)}}
 .icon-btn{width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;cursor:pointer;font-size:1rem;transition:transform .3s}
 .icon-btn:hover{transform:rotate(180deg)}
-h1{margin:34px 0 8px;font-size:clamp(2.4rem,6vw,4.4rem);line-height:1;font-weight:800;letter-spacing:-.03em;max-width:14ch}
-.lead{margin:0;max-width:52ch;opacity:.92;font-size:1.1rem}
-.in{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
-.d1{animation-delay:.08s}.d2{animation-delay:.16s}
+h1{margin:34px 0 8px;font-size:clamp(2.3rem,6vw,4.2rem);line-height:1;font-weight:800;letter-spacing:-.03em;max-width:15ch}
+.lead{margin:0;max-width:54ch;opacity:.92;font-size:1.1rem}
+.in{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}.d1{animation-delay:.08s}.d2{animation-delay:.16s}
 @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
-/* stats */
-.stats{max-width:1400px;margin:-62px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;position:relative}
+.stats{margin-top:-62px;padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;position:relative}
 .stat{background:var(--surface);border-radius:18px;padding:18px 22px;box-shadow:var(--shadow);border:1px solid var(--line);transition:transform .25s}
 .stat:hover{transform:translateY(-4px)}
-.stat b{display:block;font-size:2rem;line-height:1.1;font-weight:800;background:linear-gradient(120deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stat b{display:block;font-size:2.2rem;line-height:1.1;font-weight:800;background:linear-gradient(120deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
 .stat span{color:var(--muted);font-size:.9rem}
-/* layout */
-.layout{max-width:1400px;margin:24px auto 0;padding:0 24px 64px;display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
+.layout{margin-top:24px;padding:0 24px 64px;display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
 .composer{padding:24px;position:sticky;top:20px}
-h2{margin:0 0 4px;font-size:1.35rem;font-weight:800;letter-spacing:-.01em}
+h2{margin:0 0 4px;font-size:1.35rem;font-weight:800}
 .hint{margin:0 0 18px;color:var(--muted);font-size:.95rem}
 label{display:block;font-weight:600;font-size:.9rem;margin:0 0 6px}
-input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:2px solid transparent;border-radius:12px;padding:12px 14px;transition:border-color .2s,box-shadow .2s,background .2s}
-textarea{resize:vertical;min-height:120px}
-input:focus,textarea:focus,select:focus{outline:0;border-color:var(--a);background:var(--surface);box-shadow:0 0 0 4px color-mix(in srgb,var(--a) 20%,transparent)}
+input,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:2px solid transparent;border-radius:12px;padding:12px 14px;transition:border-color .2s,box-shadow .2s,background .2s}
+input:focus,select:focus{outline:0;border-color:var(--a);background:var(--surface);box-shadow:0 0 0 4px color-mix(in srgb,var(--a) 20%,transparent)}
 button:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
-.field{margin-bottom:16px}
-.count{display:block;text-align:right;color:var(--muted);font-size:.8rem;margin-top:4px}
-.btn{position:relative;overflow:hidden;width:100%;padding:14px 16px;border:0;border-radius:12px;color:#fff;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;
-  background:linear-gradient(120deg,var(--a),var(--b));box-shadow:0 8px 20px color-mix(in srgb,var(--b) 35%,transparent);transition:transform .15s,box-shadow .2s}
-.btn:hover{transform:translateY(-2px)}
-.btn:active{transform:scale(.97)}
+.field{margin-bottom:14px}
+.btn{position:relative;overflow:hidden;width:100%;padding:14px 16px;border:0;border-radius:12px;color:#fff;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;background:linear-gradient(120deg,var(--a),var(--b));box-shadow:0 8px 20px color-mix(in srgb,var(--b) 35%,transparent);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.97)}
 .btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);transition:left .6s}
 .btn:hover::after{left:130%}
 .btn[disabled]{opacity:.65;cursor:wait}
 .feed-head{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.feed-head input{flex:1 1 220px;background:var(--surface);border-color:var(--line)}
-.feed-head select{flex:0 0 auto;width:auto;background:var(--surface);border-color:var(--line)}
+.feed-head input{flex:1 1 200px}.feed-head select{flex:0 0 auto;width:auto}
+.feed-head input,.feed-head select{background:var(--surface);border-color:var(--line)}
 .meta{color:var(--muted);font-size:.95rem;margin:0 2px 14px;min-height:1.5em}
-.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.rec{position:relative;overflow:hidden;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
-  animation:rise .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s,box-shadow .25s}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.rec{position:relative;overflow:hidden;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);animation:rise .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s,box-shadow .25s}
 .rec::before{content:"";position:absolute;left:0;top:0;width:100%;height:5px;background:var(--c)}
-.rec:hover{transform:translateY(-5px) rotate(-.4deg);box-shadow:0 18px 40px rgba(12,42,51,.16)}
+.rec:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(12,42,51,.16)}
 .rec.new{outline:3px solid var(--pop);outline-offset:-3px}
-.row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.av{flex:0 0 44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:1.1rem;color:#fff;background:var(--c)}
+.row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.av{flex:0 0 46px;height:46px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:1.15rem;color:#fff;background:var(--c)}
 .rec h3{margin:0;font-size:1.1rem;line-height:1.25;overflow-wrap:anywhere}
-.rec p{margin:0 0 12px;color:var(--ink);opacity:.85;overflow-wrap:anywhere;white-space:pre-wrap}
-.rec time{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--muted);font-size:.8rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.chip{padding:2px 10px;border-radius:999px;background:var(--soft);color:var(--muted);font-size:.78rem;font-weight:500}
+.total{font-size:.9rem;color:var(--muted);margin:0 0 8px}.total b{color:var(--ink);font-size:1.2rem}
+.dates{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;min-height:28px}
+.date{padding:3px 10px;border-radius:8px;border:1px solid var(--line);font-size:.8rem}
+.date.on{background:var(--a);border-color:var(--a);color:#fff;font-weight:600}
+.mark{width:100%;padding:10px;border-radius:10px;border:2px solid var(--a);background:transparent;color:var(--a);font:inherit;font-weight:700;cursor:pointer;transition:background .2s,color .2s,transform .15s}
+.mark:hover:not(:disabled){background:var(--a);color:#fff}.mark:active{transform:scale(.97)}
+.mark:disabled{border-color:var(--line);color:var(--muted);cursor:default}
 .state{grid-column:1/-1;padding:56px 20px;text-align:center;color:var(--muted);background:var(--surface);border:2px dashed var(--line);border-radius:20px}
 .state .big{font-size:2.6rem;display:block;animation:float 5s ease-in-out infinite}
 .state strong{display:block;color:var(--ink);font-size:1.2rem;margin:6px 0 2px}
 .state .btn{width:auto;margin-top:16px;padding:11px 22px}
-.skel{height:150px;border-radius:18px;background:linear-gradient(90deg,var(--line),var(--soft),var(--line));background-size:200% 100%;animation:sh 1.3s infinite linear}
+.skel{height:200px;border-radius:18px;background:linear-gradient(90deg,var(--line),var(--soft),var(--line));background-size:200% 100%;animation:sh 1.3s infinite linear}
 @keyframes sh{to{background-position:-200% 0}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:12px;opacity:0;pointer-events:none;transition:.3s;z-index:20;max-width:90vw;font-weight:600}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .conf{position:fixed;width:10px;height:10px;border-radius:3px;pointer-events:none;z-index:30}
 @media (max-width:900px){.layout{grid-template-columns:1fr}.composer{position:static}}
-@media (max-width:560px){.stats{grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 14px}.stat{padding:12px}.stat b{font-size:1.3rem}.stat span{font-size:.75rem}.hero{padding-left:16px;padding-right:16px}.layout{padding:0 14px 48px}}
+@media (max-width:560px){.stats{gap:8px;padding:0 14px}.stat{padding:12px}.stat b{font-size:1.5rem}.stat span{font-size:.75rem}.hero{padding-left:16px;padding-right:16px}.layout{padding:0 14px 48px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <header class="hero">
-  <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+  <span class="blob b1"></span><span class="blob b2"></span>
   <div class="hero-in">
     <div class="top">
-      <div class="brand"><span class="logo">R</span>Record Board</div>
+      <div class="brand"><span class="logo">A</span>Lab Attendance</div>
       <div class="tools">
         <span class="pill" id="status"><span class="dot"></span><span id="statusText">Connecting…</span></span>
         <button class="icon-btn" id="theme" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
       </div>
     </div>
-    <h1 class="in">Save it. See it. Search it.</h1>
-    <p class="lead in d1">Every record you add is stored in MongoDB Atlas and shown here live.</p>
+    <h1 class="in">Attendance, made simple.</h1>
+    <p class="lead in d1">Pick a session date, mark students present, and watch each record grow as the semester moves along.</p>
   </div>
 </header>
 
 <section class="stats" aria-label="Summary">
-  <div class="stat in d1"><b id="sTotal">0</b><span>Total records</span></div>
-  <div class="stat in d2"><b id="sToday">0</b><span>Added today</span></div>
-  <div class="stat in d2"><b id="sLatest">None yet</b><span>Latest record</span></div>
+  <div class="stat in d1"><b id="sStudents">0</b><span>Students</span></div>
+  <div class="stat in d2"><b id="sSessions">0</b><span>Sessions logged</span></div>
+  <div class="stat in d2"><b id="sPresent">0</b><span>Present on session date</span></div>
 </section>
 
 <main class="layout">
   <section class="panel composer" aria-labelledby="addTitle">
-    <h2 id="addTitle">New record</h2>
-    <p class="hint">Add a short title and the details.</p>
+    <h2 id="addTitle">Mark attendance</h2>
+    <p class="hint">The session date also applies to the “Mark present” buttons on each card.</p>
     <form id="dataForm" autocomplete="off">
-      <div class="field">
-        <label for="title">Title</label>
-        <input type="text" id="title" maxlength="80" placeholder="e.g. Database 2 lab notes" required>
-        <span class="count" id="titleCount">0 / 80</span>
-      </div>
-      <div class="field">
-        <label for="content">Details</label>
-        <textarea id="content" maxlength="500" placeholder="What do you want to remember?" required></textarea>
-        <span class="count" id="contentCount">0 / 500</span>
-      </div>
-      <button class="btn" id="submitBtn" type="submit">Save record</button>
+      <div class="field"><label for="date">Session date</label><input type="date" id="date" required></div>
+      <div class="field"><label for="student">Student name</label><input type="text" id="student" maxlength="100" placeholder="e.g. Juan Dela Cruz" required></div>
+      <div class="field"><label for="subject">Subject name</label><input type="text" id="subject" maxlength="100" list="subjects" placeholder="e.g. Database 2" required><datalist id="subjects"></datalist></div>
+      <div class="field"><label for="section">Section</label><input type="text" id="section" maxlength="100" list="sections" placeholder="e.g. BSIT-3109" required><datalist id="sections"></datalist></div>
+      <button class="btn" id="submitBtn" type="submit">Mark present</button>
     </form>
   </section>
 
-  <section aria-label="Saved records">
+  <section aria-label="Attendance records">
     <div class="feed-head">
-      <input type="search" id="search" placeholder="Search records" aria-label="Search records">
-      <select id="sort" aria-label="Sort records">
-        <option value="new">Newest first</option>
-        <option value="old">Oldest first</option>
-        <option value="az">Title A to Z</option>
+      <input type="search" id="search" placeholder="Search name, subject or section" aria-label="Search">
+      <select id="fSubject" aria-label="Filter by subject"><option value="">All subjects</option></select>
+      <select id="sort" aria-label="Sort">
+        <option value="az">Name A to Z</option>
+        <option value="most">Most present</option>
+        <option value="new">Recently added</option>
       </select>
     </div>
     <p class="meta" id="meta" aria-live="polite"></p>
@@ -169,93 +151,93 @@ const $ = id => document.getElementById(id);
 const COLORS = ['#0d9488','#2563eb','#db2777','#f59e0b','#7c3aed','#16a34a'];
 let records = [], newestId = null;
 
-// Safe text: user input is never run as HTML
-function el(tag, cls, text){
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (text !== undefined) e.textContent = text;
-  return e;
-}
-function colorFor(s){ let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; }
-function ago(iso){
-  const s = Math.max(0, (Date.now() - new Date(iso)) / 1000);
-  if (s < 60) return 'Just now';
-  if (s < 3600) return Math.floor(s/60) + ' min ago';
-  if (s < 86400) return Math.floor(s/3600) + ' hr ago';
-  return new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
-}
-function toast(msg){
-  const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toast.id); toast.id = setTimeout(() => t.classList.remove('show'), 2600);
-}
-function setStatus(ok){
-  $('status').className = 'pill ' + (ok ? 'ok' : 'bad');
-  $('statusText').textContent = ok ? 'Database connected' : 'Cannot reach database';
-}
+function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+const colorFor = s => { let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
+const dayKey = d => new Date(d).toISOString().slice(0,10);
+const fmt = k => new Date(k + 'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',timeZone:'UTC'});
+const keys = r => [...new Set((r.attendance_dates || []).map(dayKey))].sort();
+function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.id); toast.id = setTimeout(() => t.classList.remove('show'), 2600); }
+function setStatus(ok){ $('status').className = 'pill ' + (ok ? 'ok' : 'bad'); $('statusText').textContent = ok ? 'Database connected' : 'Cannot reach database'; }
 function countUp(node, to){
-  const from = parseInt(node.textContent) || 0, t0 = performance.now(), dur = 600;
-  (function step(t){
-    const p = Math.min(1, (t - t0) / dur);
-    node.textContent = Math.round(from + (to - from) * p);
-    if (p < 1) requestAnimationFrame(step);
-  })(t0);
+  const from = parseInt(node.textContent) || 0, t0 = performance.now();
+  (function step(t){ const p = Math.min(1, (t - t0) / 600); node.textContent = Math.round(from + (to - from) * p); if (p < 1) requestAnimationFrame(step); })(t0);
 }
 function confetti(from){
   const r = from.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2;
-  for (let i = 0; i < 26; i++){
-    const p = el('span','conf'); p.style.left = cx + 'px'; p.style.top = cy + 'px';
-    p.style.background = COLORS[i % COLORS.length]; document.body.appendChild(p);
-    const a = Math.random() * Math.PI * 2, d = 70 + Math.random() * 120;
-    p.animate([{transform:'translate(0,0) rotate(0)',opacity:1},
-      {transform:'translate(' + Math.cos(a)*d + 'px,' + (Math.sin(a)*d + 60) + 'px) rotate(' + Math.random()*540 + 'deg)',opacity:0}],
+  for (let i = 0; i < 24; i++){
+    const p = el('span','conf'); p.style.left = cx + 'px'; p.style.top = cy + 'px'; p.style.background = COLORS[i % COLORS.length]; document.body.appendChild(p);
+    const a = Math.random() * Math.PI * 2, d = 70 + Math.random() * 110;
+    p.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:'translate(' + Math.cos(a)*d + 'px,' + (Math.sin(a)*d + 60) + 'px) rotate(' + Math.random()*540 + 'deg)',opacity:0}],
       {duration:900 + Math.random()*400, easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish = () => p.remove();
   }
 }
-function showSkeleton(){
-  const c = $('recordsContainer'); c.replaceChildren();
-  for (let i = 0; i < 4; i++) c.appendChild(el('div','skel'));
-}
+function showSkeleton(){ const c = $('recordsContainer'); c.replaceChildren(); for (let i = 0; i < 4; i++) c.appendChild(el('div','skel')); }
+
 function updateStats(){
-  countUp($('sTotal'), records.length);
-  const today = new Date().toDateString();
-  countUp($('sToday'), records.filter(r => new Date(r.createdAt).toDateString() === today).length);
-  const last = [...records].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
-  $('sLatest').textContent = last ? last.title : 'None yet';
+  const day = $('date').value;
+  countUp($('sStudents'), records.length);
+  countUp($('sSessions'), new Set(records.flatMap(keys)).size);
+  countUp($('sPresent'), records.filter(r => keys(r).includes(day)).length);
+}
+function refreshLists(){
+  const subs = [...new Set(records.map(r => r.subject_name))].sort();
+  const secs = [...new Set(records.map(r => r.section))].sort();
+  $('subjects').replaceChildren(...subs.map(s => { const o = el('option'); o.value = s; return o; }));
+  $('sections').replaceChildren(...secs.map(s => { const o = el('option'); o.value = s; return o; }));
+  const f = $('fSubject'), cur = f.value;
+  f.replaceChildren(...[''].concat(subs).map(s => { const o = el('option', null, s || 'All subjects'); o.value = s; return o; }));
+  f.value = subs.includes(cur) ? cur : '';
 }
 
 function render(){
-  const c = $('recordsContainer');
-  const q = $('search').value.trim().toLowerCase(), mode = $('sort').value;
-  const list = records.filter(r => ((r.title||'') + ' ' + (r.content||'')).toLowerCase().includes(q));
-  list.sort((a,b) =>
-    mode === 'az' ? (a.title||'').localeCompare(b.title||'') :
-    mode === 'old' ? new Date(a.createdAt) - new Date(b.createdAt) :
-    new Date(b.createdAt) - new Date(a.createdAt));
+  const c = $('recordsContainer'), day = $('date').value;
+  const q = $('search').value.trim().toLowerCase(), sub = $('fSubject').value, mode = $('sort').value;
+  const list = records.filter(r => (!sub || r.subject_name === sub) &&
+    [r.student_name, r.subject_name, r.section].join(' ').toLowerCase().includes(q));
+  list.sort((a,b) => mode === 'most' ? keys(b).length - keys(a).length :
+    mode === 'new' ? new Date(b.createdAt) - new Date(a.createdAt) : a.student_name.localeCompare(b.student_name));
 
-  $('meta').textContent = records.length
-    ? (q ? list.length + ' of ' + records.length + ' records match' : 'Showing all ' + records.length + (records.length === 1 ? ' record' : ' records'))
-    : '';
+  $('meta').textContent = records.length ? list.length + ' of ' + records.length + (records.length === 1 ? ' student' : ' students') : '';
   c.replaceChildren();
-
   if (!list.length){
     const s = el('div','state');
-    s.appendChild(el('span','big', records.length ? '🔎' : '📝'));
-    s.appendChild(el('strong',null, records.length ? 'No matches' : 'No records yet'));
-    s.appendChild(el('span',null, records.length ? 'Try a different search word.' : 'Fill in the form to save your first record.'));
+    s.append(el('span','big', records.length ? '🔎' : '📋'), el('strong',null, records.length ? 'No matches' : 'No attendance yet'),
+      el('span',null, records.length ? 'Try a different search or filter.' : 'Use the form to mark your first student present.'));
     c.appendChild(s); return;
   }
   list.forEach((r, i) => {
     const card = el('article','rec' + (r._id === newestId ? ' new' : ''));
-    const col = colorFor(r.title || ''); card.style.setProperty('--c', col);
-    card.style.animationDelay = Math.min(i, 12) * 55 + 'ms';
-    const row = el('div','row');
-    row.appendChild(el('div','av',(r.title || '?').trim().charAt(0).toUpperCase()));
-    row.appendChild(el('h3',null,r.title));
-    card.append(row, el('p',null,r.content));
-    const t = el('time',null,ago(r.createdAt)); t.dateTime = r.createdAt;
-    card.appendChild(t); c.appendChild(card);
+    card.style.setProperty('--c', colorFor(r.student_name)); card.style.animationDelay = Math.min(i, 12) * 55 + 'ms';
+    const row = el('div','row'), who = el('div'), chips = el('div','chips');
+    chips.append(el('span','chip',r.subject_name), el('span','chip',r.section));
+    who.append(el('h3',null,r.student_name), chips);
+    row.append(el('div','av',r.student_name.trim().charAt(0).toUpperCase()), who);
+
+    const ks = keys(r), total = el('p','total'); total.append(el('b',null,String(ks.length)), document.createTextNode(ks.length === 1 ? ' session attended' : ' sessions attended'));
+    const dates = el('div','dates');
+    ks.slice(-6).forEach(k => dates.appendChild(el('span','date' + (k === day ? ' on' : ''), fmt(k))));
+    if (ks.length > 6) dates.prepend(el('span','date','+' + (ks.length - 6) + ' earlier'));
+
+    const here = ks.includes(day), btn = el('button','mark', here ? '✓ Present on ' + fmt(day) : 'Mark present for ' + fmt(day));
+    btn.type = 'button'; btn.disabled = here || !day;
+    btn.onclick = () => mark({ student_name: r.student_name, subject_name: r.subject_name, section: r.section, date: day }, btn);
+    card.append(row, total, dates, btn); c.appendChild(card);
   });
-  newestId = null;
+}
+
+async function mark(p, btn){
+  const ex = records.find(r => r.student_name === p.student_name && r.subject_name === p.subject_name && r.section === p.section);
+  if (ex && keys(ex).includes(p.date)) { toast('Already marked present on ' + fmt(p.date)); return false; }
+  btn.disabled = true;
+  try{
+    const res = await fetch(VERCEL_API_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(p) });
+    if (!res.ok) throw new Error('Save failed');
+    const doc = await res.json(), i = records.findIndex(r => r._id === doc._id);
+    if (i > -1) records[i] = doc; else records.push(doc);
+    newestId = doc._id; setStatus(true); confetti(btn); toast(doc.student_name + ' marked present');
+    refreshLists(); render(); updateStats(); return true;
+  }catch(err){ setStatus(false); toast('Could not save. Check your connection and try again.'); btn.disabled = false; return false; }
 }
 
 async function loadRecords(){
@@ -263,52 +245,29 @@ async function loadRecords(){
   try{
     const res = await fetch(VERCEL_API_URL);
     if (!res.ok) throw new Error('Bad response');
-    records = await res.json();
-    setStatus(true); render(); updateStats();
+    records = await res.json(); setStatus(true); refreshLists(); render(); updateStats();
   }catch(err){
-    setStatus(false);
-    const c = $('recordsContainer'); c.replaceChildren(); $('meta').textContent = '';
-    const s = el('div','state');
-    s.appendChild(el('span','big','⚠️'));
-    s.appendChild(el('strong',null,'Records could not load'));
-    s.appendChild(el('span',null,'Check your internet connection and that the API is running.'));
-    const b = el('button','btn','Try again'); b.type = 'button'; b.onclick = loadRecords;
-    s.appendChild(b); c.appendChild(s);
+    setStatus(false); $('meta').textContent = '';
+    const c = $('recordsContainer'), s = el('div','state'), b = el('button','btn','Try again'); b.type = 'button'; b.onclick = loadRecords;
+    s.append(el('span','big','⚠️'), el('strong',null,'Records could not load'), el('span',null,'Check your internet connection and that the API is running.'), b);
+    c.replaceChildren(s);
   }
 }
 
 $('dataForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const title = $('title').value.trim(), content = $('content').value.trim();
-  if (!title || !content) return toast('Add a title and details first.');
-  const btn = $('submitBtn'); btn.disabled = true; btn.textContent = 'Saving…';
-  try{
-    const res = await fetch(VERCEL_API_URL, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ title, content })
-    });
-    if (!res.ok) throw new Error('Save failed');
-    const saved = await res.json(); newestId = saved._id;
-    $('dataForm').reset(); $('titleCount').textContent = '0 / 80'; $('contentCount').textContent = '0 / 500';
-    confetti(btn); toast('Record saved'); setStatus(true);
-    await loadRecords();
-  }catch(err){
-    setStatus(false); toast('Could not save. Check your connection and try again.');
-  }finally{
-    btn.disabled = false; btn.textContent = 'Save record';
-  }
+  const btn = $('submitBtn'), label = btn.textContent; btn.textContent = 'Saving…';
+  const ok = await mark({ student_name: $('student').value.trim(), subject_name: $('subject').value.trim(), section: $('section').value.trim(), date: $('date').value }, btn);
+  btn.textContent = label; btn.disabled = false;
+  if (ok) $('student').value = '';
 });
-
-$('title').addEventListener('input', e => $('titleCount').textContent = e.target.value.length + ' / 80');
-$('content').addEventListener('input', e => $('contentCount').textContent = e.target.value.length + ' / 500');
+$('date').addEventListener('change', () => { render(); updateStats(); });
 $('search').addEventListener('input', render);
+$('fSubject').addEventListener('change', render);
 $('sort').addEventListener('change', render);
-$('theme').addEventListener('click', () => {
-  const r = document.documentElement;
-  r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark';
-});
+$('theme').addEventListener('click', () => { const r = document.documentElement; r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark'; });
 
-// Initial load
+$('date').value = todayKey();
 loadRecords();
 </script>
 </body>
