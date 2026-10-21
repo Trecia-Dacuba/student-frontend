@@ -24,23 +24,22 @@ body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:
 .hero-in{position:relative}
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .brand{font-weight:800;display:flex;align-items:center;gap:10px}
-.logo{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--a);display:grid;place-items:center;font-weight:800;animation:wob 5s ease-in-out infinite}
-@keyframes wob{50%{transform:rotate(-8deg) scale(1.05)}}
+.logo{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--a);display:grid;place-items:center;font-weight:800}
 .tools{display:flex;gap:10px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);font-size:.875rem}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);font-size:.875rem;color:#fff;border:0;font-family:inherit}
+button.pill{cursor:pointer}
 .dot{width:9px;height:9px;border-radius:50%;background:#cbd5e1}
 .pill.ok .dot{background:#5eead4;animation:pulse 1.8s infinite}.pill.bad .dot{background:#fca5a5}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,234,212,.7)}100%{box-shadow:0 0 0 10px rgba(94,234,212,0)}}
-.icon-btn{width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;cursor:pointer;font-size:1rem;transition:transform .3s}
-.icon-btn:hover{transform:rotate(180deg)}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;cursor:pointer;font-size:1rem}
 h1{margin:34px 0 8px;font-size:clamp(2.3rem,6vw,4.2rem);line-height:1;font-weight:800;letter-spacing:-.03em;max-width:15ch}
 .lead{margin:0;max-width:54ch;opacity:.92;font-size:1.1rem}
 .in{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}.d1{animation-delay:.08s}.d2{animation-delay:.16s}
 @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
-.stats{margin-top:-62px;padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;position:relative}
-.stat{background:var(--surface);border-radius:18px;padding:18px 22px;box-shadow:var(--shadow);border:1px solid var(--line);transition:transform .25s}
-.stat:hover{transform:translateY(-4px)}
+.stats{margin-top:-62px;padding:0 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative}
+.stat{background:var(--surface);border-radius:18px;padding:18px 22px;box-shadow:var(--shadow);border:1px solid var(--line)}
 .stat b{display:block;font-size:2.2rem;line-height:1.1;font-weight:800;background:linear-gradient(120deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat b.sm{font-size:1.5rem;line-height:1.6}
 .stat span{color:var(--muted);font-size:.9rem}
 .layout{margin-top:24px;padding:0 24px 64px;display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
@@ -52,19 +51,19 @@ input,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);borde
 input:focus,select:focus{outline:0;border-color:var(--a);background:var(--surface);box-shadow:0 0 0 4px color-mix(in srgb,var(--a) 20%,transparent)}
 button:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
 .field{margin-bottom:14px}
-.btn{position:relative;overflow:hidden;width:100%;padding:14px 16px;border:0;border-radius:12px;color:#fff;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;background:linear-gradient(120deg,var(--a),var(--b));box-shadow:0 8px 20px color-mix(in srgb,var(--b) 35%,transparent);transition:transform .15s}
+.btn{width:100%;padding:14px 16px;border:0;border-radius:12px;color:#fff;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;background:linear-gradient(120deg,var(--a),var(--b));box-shadow:0 8px 20px color-mix(in srgb,var(--b) 35%,transparent);transition:transform .15s}
 .btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.97)}
-.btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);transition:left .6s}
-.btn:hover::after{left:130%}
 .btn[disabled]{opacity:.65;cursor:wait}
-.feed-head{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.feed-head input{flex:1 1 200px}.feed-head select{flex:0 0 auto;width:auto}
-.feed-head input,.feed-head select{background:var(--surface);border-color:var(--line)}
+.feed-head{display:grid;grid-template-columns:1fr repeat(4,auto);gap:10px;margin-bottom:12px}
+.feed-head input,.feed-head select{background:var(--surface);border-color:var(--line);width:100%}
 .meta{color:var(--muted);font-size:.95rem;margin:0 2px 14px;min-height:1.5em}
+.meta b{color:var(--ink)}
+.gh{margin:22px 2px 10px;font-size:1rem;font-weight:800;color:var(--a);padding-left:10px;border-left:4px solid var(--a)}
+.gh:first-child{margin-top:0}
+.gh small{color:var(--muted);font-weight:500;margin-left:6px}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
-.rec{position:relative;overflow:hidden;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);animation:rise .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s,box-shadow .25s}
+.rec{position:relative;overflow:hidden;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);animation:rise .5s both}
 .rec::before{content:"";position:absolute;left:0;top:0;width:100%;height:5px;background:var(--c)}
-.rec:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(12,42,51,.16)}
 .rec.new{outline:3px solid var(--pop);outline-offset:-3px}
 .row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .av{flex:0 0 46px;height:46px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:1.15rem;color:#fff;background:var(--c)}
@@ -75,11 +74,13 @@ button:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
 .dates{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;min-height:28px}
 .date{padding:3px 10px;border-radius:8px;border:1px solid var(--line);font-size:.8rem}
 .date.on{background:var(--a);border-color:var(--a);color:#fff;font-weight:600}
-.mark{width:100%;padding:10px;border-radius:10px;border:2px solid var(--a);background:transparent;color:var(--a);font:inherit;font-weight:700;cursor:pointer;transition:background .2s,color .2s,transform .15s}
-.mark:hover:not(:disabled){background:var(--a);color:#fff}.mark:active{transform:scale(.97)}
-.mark:disabled{border-color:var(--line);color:var(--muted);cursor:default}
-.state{grid-column:1/-1;padding:56px 20px;text-align:center;color:var(--muted);background:var(--surface);border:2px dashed var(--line);border-radius:20px}
-.state .big{font-size:2.6rem;display:block;animation:float 5s ease-in-out infinite}
+.mark{width:100%;padding:10px;border-radius:10px;border:2px solid var(--a);background:transparent;color:var(--a);font:inherit;font-weight:700;cursor:pointer;transition:background .2s,color .2s}
+.mark:hover:not(:disabled){background:var(--a);color:#fff}
+.mark.undo{border-color:var(--line);color:var(--muted)}
+.mark.undo:hover:not(:disabled){background:#dc2626;border-color:#dc2626;color:#fff}
+.mark:disabled{opacity:.6;cursor:default}
+.state{padding:56px 20px;text-align:center;color:var(--muted);background:var(--surface);border:2px dashed var(--line);border-radius:20px}
+.state .big{font-size:2.6rem;display:block}
 .state strong{display:block;color:var(--ink);font-size:1.2rem;margin:6px 0 2px}
 .state .btn{width:auto;margin-top:16px;padding:11px 22px}
 .skel{height:200px;border-radius:18px;background:linear-gradient(90deg,var(--line),var(--soft),var(--line));background-size:200% 100%;animation:sh 1.3s infinite linear}
@@ -87,8 +88,9 @@ button:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:12px;opacity:0;pointer-events:none;transition:.3s;z-index:20;max-width:90vw;font-weight:600}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .conf{position:fixed;width:10px;height:10px;border-radius:3px;pointer-events:none;z-index:30}
-@media (max-width:900px){.layout{grid-template-columns:1fr}.composer{position:static}}
-@media (max-width:560px){.stats{gap:8px;padding:0 14px}.stat{padding:12px}.stat b{font-size:1.5rem}.stat span{font-size:.75rem}.hero{padding-left:16px;padding-right:16px}.layout{padding:0 14px 48px}}
+@media (max-width:1100px){.feed-head{grid-template-columns:1fr 1fr}.feed-head input{grid-column:1/-1}}
+@media (max-width:900px){.layout{grid-template-columns:1fr}.composer{position:static}.stats{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.stats{gap:8px;padding:0 14px}.stat{padding:12px}.stat b{font-size:1.5rem}.stat b.sm{font-size:1.1rem}.stat span{font-size:.75rem}.hero{padding-left:16px;padding-right:16px}.layout{padding:0 14px 48px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -100,6 +102,7 @@ button:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
       <div class="brand"><span class="logo">A</span>Lab Attendance</div>
       <div class="tools">
         <span class="pill" id="status"><span class="dot"></span><span id="statusText">Connecting…</span></span>
+        <button class="pill" id="export" type="button">Export CSV</button>
         <button class="icon-btn" id="theme" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
       </div>
     </div>
@@ -110,8 +113,9 @@ button:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
 
 <section class="stats" aria-label="Summary">
   <div class="stat in d1"><b id="sStudents">0</b><span>Students</span></div>
-  <div class="stat in d2"><b id="sSessions">0</b><span>Sessions logged</span></div>
-  <div class="stat in d2"><b id="sPresent">0</b><span>Present on session date</span></div>
+  <div class="stat in d1"><b id="sSections">0</b><span>Sections</span></div>
+  <div class="stat in d2"><b id="sSessions">0</b><span>Lab days recorded</span></div>
+  <div class="stat in d2"><b class="sm" id="sLatest">None yet</b><span>Latest date recorded</span></div>
 </section>
 
 <main class="layout">
@@ -130,7 +134,13 @@ button:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
   <section aria-label="Attendance records">
     <div class="feed-head">
       <input type="search" id="search" placeholder="Search name, subject or section" aria-label="Search">
+      <select id="fSection" aria-label="Filter by section"><option value="">All sections</option></select>
       <select id="fSubject" aria-label="Filter by subject"><option value="">All subjects</option></select>
+      <select id="group" aria-label="Group by">
+        <option value="section">Group by section</option>
+        <option value="subject">Group by subject</option>
+        <option value="">No grouping</option>
+      </select>
       <select id="sort" aria-label="Sort">
         <option value="az">Name A to Z</option>
         <option value="most">Most present</option>
@@ -138,13 +148,12 @@ button:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
       </select>
     </div>
     <p class="meta" id="meta" aria-live="polite"></p>
-    <div class="list" id="recordsContainer"></div>
+    <div id="recordsContainer"></div>
   </section>
 </main>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-// IMPORTANT: Replace this URL with your specific Vercel deployment URL
 const VERCEL_API_URL = 'https://student-api-backend-one.vercel.app/api';
 
 const $ = id => document.getElementById(id);
@@ -153,11 +162,12 @@ let records = [], newestId = null;
 
 function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
 const colorFor = s => { let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
-const dayKey = d => new Date(d).toISOString().slice(0,10);
-const fmt = k => new Date(k + 'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',timeZone:'UTC'});
-const keys = r => [...new Set((r.attendance_dates || []).map(dayKey))].sort();
+const dayKey = d => { const t = new Date(d); return isNaN(t) ? '' : t.toISOString().slice(0,10); };
+const fmt = k => new Date(k + 'T00:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
+const keys = r => [...new Set((r.attendance_dates || []).map(dayKey).filter(Boolean))].sort();
+const sameStudent = (a,b) => a.student_name === b.student_name && a.subject_name === b.subject_name && a.section === b.section;
 function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
-function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.id); toast.id = setTimeout(() => t.classList.remove('show'), 2600); }
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.id); toast.id = setTimeout(() => t.classList.remove('show'), 3000); }
 function setStatus(ok){ $('status').className = 'pill ' + (ok ? 'ok' : 'bad'); $('statusText').textContent = ok ? 'Database connected' : 'Cannot reach database'; }
 function countUp(node, to){
   const from = parseInt(node.textContent) || 0, t0 = performance.now();
@@ -168,37 +178,65 @@ function confetti(from){
   for (let i = 0; i < 24; i++){
     const p = el('span','conf'); p.style.left = cx + 'px'; p.style.top = cy + 'px'; p.style.background = COLORS[i % COLORS.length]; document.body.appendChild(p);
     const a = Math.random() * Math.PI * 2, d = 70 + Math.random() * 110;
-    p.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:'translate(' + Math.cos(a)*d + 'px,' + (Math.sin(a)*d + 60) + 'px) rotate(' + Math.random()*540 + 'deg)',opacity:0}],
+    p.animate([{transform:'translate(0,0)',opacity:1},{transform:'translate(' + Math.cos(a)*d + 'px,' + (Math.sin(a)*d + 60) + 'px) rotate(' + Math.random()*540 + 'deg)',opacity:0}],
       {duration:900 + Math.random()*400, easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish = () => p.remove();
   }
 }
-function showSkeleton(){ const c = $('recordsContainer'); c.replaceChildren(); for (let i = 0; i < 4; i++) c.appendChild(el('div','skel')); }
+function showSkeleton(){ const c = $('recordsContainer'), l = el('div','list'); for (let i = 0; i < 4; i++) l.appendChild(el('div','skel')); c.replaceChildren(l); }
 
 function updateStats(){
-  const day = $('date').value;
+  const all = [...new Set(records.flatMap(keys))].sort();
   countUp($('sStudents'), records.length);
-  countUp($('sSessions'), new Set(records.flatMap(keys)).size);
-  countUp($('sPresent'), records.filter(r => keys(r).includes(day)).length);
+  countUp($('sSections'), new Set(records.map(r => r.section)).size);
+  countUp($('sSessions'), all.length);
+  $('sLatest').textContent = all.length ? fmt(all[all.length - 1]) : 'None yet';
+}
+function fillSelect(sel, vals, label){
+  const cur = sel.value;
+  sel.replaceChildren(...[''].concat(vals).map(s => { const o = el('option', null, s || label); o.value = s; return o; }));
+  sel.value = vals.includes(cur) ? cur : '';
 }
 function refreshLists(){
   const subs = [...new Set(records.map(r => r.subject_name))].sort();
   const secs = [...new Set(records.map(r => r.section))].sort();
   $('subjects').replaceChildren(...subs.map(s => { const o = el('option'); o.value = s; return o; }));
   $('sections').replaceChildren(...secs.map(s => { const o = el('option'); o.value = s; return o; }));
-  const f = $('fSubject'), cur = f.value;
-  f.replaceChildren(...[''].concat(subs).map(s => { const o = el('option', null, s || 'All subjects'); o.value = s; return o; }));
-  f.value = subs.includes(cur) ? cur : '';
+  fillSelect($('fSubject'), subs, 'All subjects'); fillSelect($('fSection'), secs, 'All sections');
+}
+
+function card(r, i, day){
+  const c = el('article','rec' + (r._id === newestId ? ' new' : ''));
+  c.style.setProperty('--c', colorFor(r.student_name)); c.style.animationDelay = Math.min(i, 12) * 40 + 'ms';
+  const row = el('div','row'), who = el('div'), chips = el('div','chips');
+  chips.append(el('span','chip',r.subject_name), el('span','chip',r.section));
+  who.append(el('h3',null,r.student_name), chips);
+  row.append(el('div','av',r.student_name.trim().charAt(0).toUpperCase()), who);
+  const ks = keys(r), total = el('p','total');
+  total.append(el('b',null,String(ks.length)), document.createTextNode(ks.length === 1 ? ' day present' : ' days present'));
+  const dates = el('div','dates');
+  if (ks.length > 6) dates.append(el('span','date','+' + (ks.length - 6) + ' earlier'));
+  ks.slice(-6).forEach(k => dates.appendChild(el('span','date' + (k === day ? ' on' : ''), fmt(k))));
+  const here = ks.includes(day), btn = el('button','mark' + (here ? ' undo' : ''), here ? '✓ Present on ' + fmt(day) + ' (tap to undo)' : 'Mark present for ' + (day ? fmt(day) : '…'));
+  btn.type = 'button'; btn.disabled = !day;
+  const p = { student_name: r.student_name, subject_name: r.subject_name, section: r.section, date: day };
+  btn.onclick = () => here ? (confirm('Remove ' + fmt(day) + ' from ' + r.student_name + '?') && act('DELETE', p, btn)) : act('POST', p, btn);
+  c.append(row, total, dates, btn); return c;
 }
 
 function render(){
   const c = $('recordsContainer'), day = $('date').value;
-  const q = $('search').value.trim().toLowerCase(), sub = $('fSubject').value, mode = $('sort').value;
-  const list = records.filter(r => (!sub || r.subject_name === sub) &&
+  const q = $('search').value.trim().toLowerCase(), sub = $('fSubject').value, sec = $('fSection').value, mode = $('sort').value, g = $('group').value;
+  const list = records.filter(r => (!sub || r.subject_name === sub) && (!sec || r.section === sec) &&
     [r.student_name, r.subject_name, r.section].join(' ').toLowerCase().includes(q));
   list.sort((a,b) => mode === 'most' ? keys(b).length - keys(a).length :
     mode === 'new' ? new Date(b.createdAt) - new Date(a.createdAt) : a.student_name.localeCompare(b.student_name));
 
-  $('meta').textContent = records.length ? list.length + ' of ' + records.length + (records.length === 1 ? ' student' : ' students') : '';
+  const here = list.filter(r => keys(r).includes(day)).length;
+  $('meta').replaceChildren();
+  if (records.length){
+    $('meta').append('Showing ' + list.length + ' of ' + records.length + (records.length === 1 ? ' student' : ' students'));
+    if (day) { $('meta').append(' · '); $('meta').append(el('b',null, here + ' present on ' + fmt(day))); }
+  }
   c.replaceChildren();
   if (!list.length){
     const s = el('div','state');
@@ -206,65 +244,66 @@ function render(){
       el('span',null, records.length ? 'Try a different search or filter.' : 'Use the form to mark your first student present.'));
     c.appendChild(s); return;
   }
-  list.forEach((r, i) => {
-    const card = el('article','rec' + (r._id === newestId ? ' new' : ''));
-    card.style.setProperty('--c', colorFor(r.student_name)); card.style.animationDelay = Math.min(i, 12) * 55 + 'ms';
-    const row = el('div','row'), who = el('div'), chips = el('div','chips');
-    chips.append(el('span','chip',r.subject_name), el('span','chip',r.section));
-    who.append(el('h3',null,r.student_name), chips);
-    row.append(el('div','av',r.student_name.trim().charAt(0).toUpperCase()), who);
-
-    const ks = keys(r), total = el('p','total'); total.append(el('b',null,String(ks.length)), document.createTextNode(ks.length === 1 ? ' session attended' : ' sessions attended'));
-    const dates = el('div','dates');
-    ks.slice(-6).forEach(k => dates.appendChild(el('span','date' + (k === day ? ' on' : ''), fmt(k))));
-    if (ks.length > 6) dates.prepend(el('span','date','+' + (ks.length - 6) + ' earlier'));
-
-    const here = ks.includes(day), btn = el('button','mark', here ? '✓ Present on ' + fmt(day) : 'Mark present for ' + fmt(day));
-    btn.type = 'button'; btn.disabled = here || !day;
-    btn.onclick = () => mark({ student_name: r.student_name, subject_name: r.subject_name, section: r.section, date: day }, btn);
-    card.append(row, total, dates, btn); c.appendChild(card);
+  const groups = new Map();
+  list.forEach(r => { const k = g === 'section' ? r.section : g === 'subject' ? r.subject_name : ''; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
+  [...groups.keys()].sort().forEach(k => {
+    const rs = groups.get(k);
+    if (g) { const h = el('h3','gh', k); h.append(el('small',null, rs.length + (rs.length === 1 ? ' student' : ' students'))); c.appendChild(h); }
+    const l = el('div','list'); rs.forEach((r,i) => l.appendChild(card(r, i, day))); c.appendChild(l);
   });
 }
 
-async function mark(p, btn){
-  const ex = records.find(r => r.student_name === p.student_name && r.subject_name === p.subject_name && r.section === p.section);
-  if (ex && keys(ex).includes(p.date)) { toast('Already marked present on ' + fmt(p.date)); return false; }
+async function api(method, p){
+  const res = await fetch(VERCEL_API_URL, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(p) });
+  if (!res.ok) throw new Error('Server returned ' + res.status);
+  return res.json();
+}
+
+async function act(method, p, btn){
+  const ex = records.find(r => sameStudent(r, p));
+  if (method === 'POST' && ex && keys(ex).includes(p.date)) { toast(p.student_name + ' is already marked present on ' + fmt(p.date)); return false; }
   btn.disabled = true;
   try{
-    const res = await fetch(VERCEL_API_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(p) });
-    if (!res.ok) throw new Error('Save failed');
-    const doc = await res.json(), i = records.findIndex(r => r._id === doc._id);
+    const doc = await api(method, p), i = records.findIndex(r => r._id === doc._id);
     if (i > -1) records[i] = doc; else records.push(doc);
-    newestId = doc._id; setStatus(true); confetti(btn); toast(doc.student_name + ' marked present');
+    newestId = doc._id; setStatus(true);
+    if (method === 'POST') { confetti(btn); toast(doc.student_name + ' marked present'); } else toast('Removed ' + fmt(p.date) + ' for ' + doc.student_name);
     refreshLists(); render(); updateStats(); return true;
-  }catch(err){ setStatus(false); toast('Could not save. Check your connection and try again.'); btn.disabled = false; return false; }
+  }catch(err){ setStatus(false); toast('Could not save: ' + err.message); btn.disabled = false; return false; }
 }
 
 async function loadRecords(){
   showSkeleton();
   try{
     const res = await fetch(VERCEL_API_URL);
-    if (!res.ok) throw new Error('Bad response');
+    if (!res.ok) throw new Error('Server returned ' + res.status);
     records = await res.json(); setStatus(true); refreshLists(); render(); updateStats();
   }catch(err){
     setStatus(false); $('meta').textContent = '';
-    const c = $('recordsContainer'), s = el('div','state'), b = el('button','btn','Try again'); b.type = 'button'; b.onclick = loadRecords;
-    s.append(el('span','big','⚠️'), el('strong',null,'Records could not load'), el('span',null,'Check your internet connection and that the API is running.'), b);
-    c.replaceChildren(s);
+    const s = el('div','state'), b = el('button','btn','Try again'); b.type = 'button'; b.onclick = loadRecords;
+    s.append(el('span','big','⚠️'), el('strong',null,'Records could not load'), el('span',null, err.message + '. Check your connection and that the API is running.'), b);
+    $('recordsContainer').replaceChildren(s);
   }
+}
+
+function exportCsv(){
+  if (!records.length) { toast('Nothing to export yet'); return; }
+  const q = v => '"' + String(v).replace(/"/g,'""') + '"';
+  const rows = [['Student','Subject','Section','Days present','Dates']].concat(records.map(r => { const k = keys(r); return [r.student_name, r.subject_name, r.section, k.length, k.join('; ')]; }));
+  const a = el('a'); a.href = URL.createObjectURL(new Blob([rows.map(r => r.map(q).join(',')).join('\n')], {type:'text/csv'}));
+  a.download = 'attendance-' + todayKey() + '.csv'; a.click(); URL.revokeObjectURL(a.href);
 }
 
 $('dataForm').addEventListener('submit', async e => {
   e.preventDefault();
   const btn = $('submitBtn'), label = btn.textContent; btn.textContent = 'Saving…';
-  const ok = await mark({ student_name: $('student').value.trim(), subject_name: $('subject').value.trim(), section: $('section').value.trim(), date: $('date').value }, btn);
+  const ok = await act('POST', { student_name: $('student').value.trim(), subject_name: $('subject').value.trim(), section: $('section').value.trim(), date: $('date').value }, btn);
   btn.textContent = label; btn.disabled = false;
   if (ok) $('student').value = '';
 });
-$('date').addEventListener('change', () => { render(); updateStats(); });
-$('search').addEventListener('input', render);
-$('fSubject').addEventListener('change', render);
-$('sort').addEventListener('change', render);
+$('date').addEventListener('change', render);
+['search','fSubject','fSection','group','sort'].forEach(id => $(id).addEventListener(id === 'search' ? 'input' : 'change', render));
+$('export').addEventListener('click', exportCsv);
 $('theme').addEventListener('click', () => { const r = document.documentElement; r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark'; });
 
 $('date').value = todayKey();
