@@ -77,7 +77,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .heat{display:flex;gap:3px;margin:12px 0 6px;min-height:16px}
 .hc{flex:1;max-width:14px;height:16px;border-radius:4px;background:var(--line)}.hc.on{background:var(--g2)}
 .meta{font-size:.82rem;color:var(--muted);margin-bottom:12px;display:flex;justify-content:space-between;gap:8px}.meta b{color:var(--ink)}.low{color:var(--warn);font-weight:700}
-.streak{background:var(--soft);color:var(--g2);font-weight:700;padding:0 9px;border-radius:99px;font-size:.76rem}
 .mk{width:100%;padding:10px;border-radius:11px;border:2px solid var(--g2);background:transparent;color:var(--g2);font-weight:700;cursor:pointer;transition:background .2s,color .2s,transform .15s}
 .mk:hover:not(:disabled){background:var(--g2);color:#fff}.mk:active{transform:scale(.97)}
 .mk.on{background:var(--g2);color:#fff}.mk.on:hover:not(:disabled){background:var(--warn);border-color:var(--warn)}
@@ -168,7 +167,7 @@ label{display:block;font-weight:600;font-size:.84rem;margin:0 0 4px}.field{margi
         <select id="fSection" aria-label="Section"></select>
         <select id="fSubject" aria-label="Subject"></select>
         <select id="group" aria-label="Group by"><option value="section">Group by section</option><option value="subject">Group by subject</option><option value="both">Section + subject</option><option value="none">No grouping</option></select>
-        <select id="sort" aria-label="Sort"><option value="az">Name A to Z</option><option value="most">Highest attendance</option><option value="least">Lowest attendance</option><option value="streak">Longest streak</option></select>
+        <select id="sort" aria-label="Sort"><option value="az">Name A to Z</option><option value="most">Highest attendance</option><option value="least">Lowest attendance</option></select>
       </div>
       <div class="bar2">
         <button class="st on" data-st="" type="button">All<span id="cAll">0</span></button>
@@ -274,7 +273,6 @@ function fillSelect(id, label, vals){
   const s = $(id), cur = s.value; s.replaceChildren(...[''].concat(vals).map(v => { const o = el('option', null, v || label); o.value = v; return o; }));
   s.value = vals.includes(cur) ? cur : '';
 }
-function streakOf(r, ds){ const ks = keys(r); let n = 0; for (let i = ds.length - 1; i >= 0 && ks.includes(ds[i]); i--) n++; return n; }
 function updateSel(){
   const n = sel.size, all = shownNow.length && shownNow.every(r => sel.has(r._id));
   $('selBtn').textContent = 'Apply to selected (' + n + ')'; $('selBtn').disabled = !n;
@@ -296,7 +294,7 @@ function render(){
   const base = scoped.filter(r => [r.student_name, r.subject_name, r.section].join(' ').toLowerCase().includes(q));
   const shown = base.filter(r => !stat || S(r) === (stat === 'unmarked' ? '' : stat)); shownNow = shown;
   const m = $('sort').value, byName = (a,b) => a.student_name.localeCompare(b.student_name);
-  shown.sort((a,b) => m === 'most' ? rate(b) - rate(a) || byName(a,b) : m === 'least' ? rate(a) - rate(b) || byName(a,b) : m === 'streak' ? streakOf(b, ds) - streakOf(a, ds) || byName(a,b) : byName(a,b));
+  shown.sort((a,b) => m === 'most' ? rate(b) - rate(a) || byName(a,b) : m === 'least' ? rate(a) - rate(b) || byName(a,b) : byName(a,b));
 
   // chips + summary
   const bc = x => base.filter(r => S(r) === x).length; $('cAll').textContent = base.length; $('cPresent').textContent = bc('present'); $('cLate').textContent = bc('late'); $('cAbsent').textContent = bc('absent'); $('cExcused').textContent = bc('excused'); $('cUnm').textContent = bc('');
@@ -338,17 +336,17 @@ function render(){
       box.appendChild(h); }
     if (view === 'sheet'){
       const tw = el('div','tw'), t = el('table'), hd = el('tr');
-      ['','Student','Subject','Section','Days','Rate','Streak','Status',''].forEach(x => hd.appendChild(el('th',null,x))); t.appendChild(el('thead')).appendChild(hd);
+      ['','Student','Subject','Section','Days','Rate','Status',''].forEach(x => hd.appendChild(el('th',null,x))); t.appendChild(el('thead')).appendChild(hd);
       const tb = el('tbody');
       gr.forEach(r => { const is = has(r), tr = el('tr', is ? 'is' : ''), td = () => tr.appendChild(el('td')), rt = Math.round(rate(r) * 100);
         const c0 = td(); c0.appendChild(pick(r, tr)); c0.firstChild.style.position = 'static';
         td().textContent = r.student_name; tr.lastChild.className = 'n'; td().textContent = r.subject_name; td().textContent = r.section; td().textContent = keys(r).length;
-        const c5 = td(); c5.textContent = rt + '%'; if (days.length > 1 && rt < 75) c5.className = 'low'; td().textContent = streakOf(r, ds); td().appendChild(segCtl(r, S(r), true)); td().appendChild(editBtn(r, true)); tb.appendChild(tr); });
+        const c5 = td(); c5.textContent = rt + '%'; if (days.length > 1 && rt < 75) c5.className = 'low'; td().appendChild(segCtl(r, S(r), true)); td().appendChild(editBtn(r, true)); tb.appendChild(tr); });
       t.appendChild(tb); tw.appendChild(t); box.appendChild(tw); return;
     }
     const grid = el('div','grid');
     gr.forEach(r => {
-      const ks = keys(r), m = smap(r), s = m[day] || '', rt = rate(r), p = Math.round(rt * 100), sk = streakOf(r, ds), low = days.length > 1 && rt < .75;
+      const ks = keys(r), m = smap(r), s = m[day] || '', rt = rate(r), p = Math.round(rt * 100), low = days.length > 1 && rt < .75;
       const c = el('article','card' + (s ? ' s-' + s : '') + (first ? ' in' : '') + (r._id === popId ? ' pop' : ''));
       if (first) c.style.animationDelay = Math.min(i++, 16) * 35 + 'ms';
       const av = el('div','av',r.student_name.trim().charAt(0).toUpperCase()); av.style.setProperty('--c', colorFor(r.student_name));
@@ -359,7 +357,7 @@ function render(){
       l.append(el('b',null,ks.length + ' attended'), document.createTextNode(' · '), el('span', low ? 'low' : '', p + '%'), document.createTextNode((cl ? ' · ' + cl + ' late' : '') + (ca ? ' · ' + ca + ' absent' : '')));
       const dts = el('div','dts'), rd = Object.keys(m).sort(); if (rd.length > 4) dts.appendChild(el('span',null,'+' + (rd.length - 4) + ' earlier'));
       rd.slice(-4).forEach(k => { const x = el('span', m[k], fmt(k, true)); x.title = LABEL[m[k]]; dts.appendChild(x); }); if (!rd.length) dts.appendChild(el('span',null,'No dates yet'));
-      meta.append(l); if (sk > 1) meta.appendChild(el('span','streak',sk + ' in a row'));
+      meta.append(l);
       c.append(editBtn(r), pick(r, c), w, heat, dts, meta, segCtl(r, s)); grid.appendChild(c);
     });
     box.appendChild(grid);
