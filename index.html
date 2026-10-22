@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f6f5;--surface:#fff;--ink:#10231c;--muted:#5c6f67;--line:#dfe7e3;--g:#0f5c46;--g2:#14805f;--gold:#c8962b;--soft:#e9f2ee;--warn:#c2410c;
+:root{--bg:#f4f6f5;--surface:#fff;--ink:#10231c;--muted:#5c6f67;--line:#dfe7e3;--g:#0f5c46;--g2:#14805f;--gold:#c8962b;--soft:#e9f2ee;--warn:#c2410c;--late:#d97706;--abs:#dc2626;--exc:#2563eb;
  --shadow:0 1px 2px rgba(16,35,28,.06),0 10px 28px rgba(16,35,28,.07);
  --sans:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;--serif:"Fraunces",Georgia,"Times New Roman",serif}
-:root[data-theme="dark"]{color-scheme:dark;--bg:#0b1411;--surface:#12201b;--ink:#e7f1ec;--muted:#8fa89d;--line:#1f332b;--g:#34d399;--g2:#10b981;--gold:#e8b94a;--soft:#173026;--warn:#fb923c;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.3)}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0b1411;--surface:#12201b;--ink:#e7f1ec;--muted:#8fa89d;--line:#1f332b;--g:#34d399;--g2:#10b981;--gold:#e8b94a;--soft:#173026;--warn:#fb923c;--late:#fbbf24;--abs:#f87171;--exc:#60a5fa;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.3)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.45;transition:background .3s,color .3s;padding-bottom:env(safe-area-inset-bottom,0)}
 button,input,select{font:inherit;color:inherit}
@@ -83,6 +83,21 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .mk.on{background:var(--g2);color:#fff}.mk.on:hover:not(:disabled){background:var(--warn);border-color:var(--warn)}
 .mk:disabled{opacity:.5;cursor:default}
 .mk.sm{width:auto;padding:5px 12px;font-size:.84rem;border-width:1.5px}
+.hc.present{background:var(--g2)}.hc.late{background:var(--late)}.hc.absent{background:var(--abs)}.hc.excused{background:var(--exc)}
+.card.s-present{border-color:var(--g2);background:linear-gradient(180deg,color-mix(in srgb,var(--g2) 10%,var(--surface)),var(--surface) 75%)}
+.card.s-late{border-color:var(--late);background:linear-gradient(180deg,color-mix(in srgb,var(--late) 12%,var(--surface)),var(--surface) 75%)}
+.card.s-absent{border-color:var(--abs);background:linear-gradient(180deg,color-mix(in srgb,var(--abs) 10%,var(--surface)),var(--surface) 75%)}
+.card.s-excused{border-color:var(--exc);background:linear-gradient(180deg,color-mix(in srgb,var(--exc) 10%,var(--surface)),var(--surface) 75%)}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.sg button{padding:8px 2px;border-radius:9px;border:1.5px solid var(--line);background:transparent;font-size:.76rem;font-weight:700;cursor:pointer;color:var(--muted);transition:background .2s,color .2s,border-color .2s,transform .15s}
+.sg button:hover:not(:disabled){border-color:var(--c);color:var(--c)}.sg button:active{transform:scale(.94)}
+.sg button.on{background:var(--c);border-color:var(--c);color:#fff}.sg button:disabled{opacity:.5;cursor:default}
+.sg .present{--c:var(--g2)}.sg .late{--c:var(--late)}.sg .absent{--c:var(--abs)}.sg .excused{--c:var(--exc)}
+.sg.sm{display:inline-grid;grid-template-columns:repeat(4,auto)}.sg.sm button{padding:5px 9px}
+.dts{display:flex;gap:5px;flex-wrap:wrap;margin:0 0 8px;font-size:.74rem}
+.dts span{padding:1px 8px;border-radius:7px;border:1px solid var(--line);border-left:3px solid var(--c,var(--line));color:var(--muted)}
+.dts .present{--c:var(--g2)}.dts .late{--c:var(--late)}.dts .absent{--c:var(--abs)}.dts .excused{--c:var(--exc)}
+.selrow{display:grid;grid-template-columns:100px 1fr;gap:8px}.selrow select{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:0 8px}
 .tw{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
 table{width:100%;border-collapse:collapse;font-size:.92rem}
 th{text-align:left;font-size:.76rem;color:var(--muted);font-weight:600;padding:9px 12px;background:var(--soft);white-space:nowrap}
@@ -157,8 +172,11 @@ label{display:block;font-weight:600;font-size:.84rem;margin:0 0 4px}.field{margi
       </div>
       <div class="bar2">
         <button class="st on" data-st="" type="button">All<span id="cAll">0</span></button>
-        <button class="st" data-st="p" type="button">Present<span id="cP">0</span></button>
-        <button class="st" data-st="a" type="button">Absent<span id="cA">0</span></button>
+        <button class="st" data-st="present" type="button">Present<span id="cPresent">0</span></button>
+        <button class="st" data-st="late" type="button">Late<span id="cLate">0</span></button>
+        <button class="st" data-st="absent" type="button">Absent<span id="cAbsent">0</span></button>
+        <button class="st" data-st="excused" type="button">Excused<span id="cExcused">0</span></button>
+        <button class="st" data-st="unmarked" type="button">Not marked<span id="cUnm">0</span></button>
         <button class="b2 sp" id="selAll" type="button">Select all shown</button>
         <div class="seg"><button id="vCards" class="on" type="button">Cards</button><button id="vSheet" type="button">Sheet</button></div>
       </div>
@@ -173,14 +191,15 @@ label{display:block;font-weight:600;font-size:.84rem;margin:0 0 4px}.field{margi
           <div><strong id="gCnt">0 of 0 present</strong><span id="gSub"></span></div></div>
         <div class="btns">
           <button class="pb" id="allBtn" type="button">Mark everyone present</button>
-          <button class="pb gd" id="selBtn" type="button">Mark selected present (0)</button>
-          <button class="pb gh2" id="copyBtn" type="button">Copy absent list</button>
+          <button class="pb gh2" id="restBtn" type="button">Mark unmarked as absent</button>
+          <div class="selrow"><select id="selSt" aria-label="Status for selected students"><option value="present">Present</option><option value="late">Late</option><option value="absent">Absent</option><option value="excused">Excused</option></select><button class="pb gd" id="selBtn" type="button">Apply to selected (0)</button></div>
+          <button class="pb gh2" id="copyBtn" type="button">Copy attendance report</button>
           <button class="pb gh2" id="noneBtn" type="button">Clear this day</button>
         </div>
       </div>
       <div class="box ov">
         <div><b id="sStu">0</b><span>Students</span></div><div><b id="sSec">0</b><span>Sections</span></div>
-        <div><b id="sDays">0</b><span>Lab days</span></div><div><b id="sAvg">0%</b><span>Avg attendance</span></div>
+        <div><b id="sDays">0</b><span>Lab days</span></div><div title="Present + late, not counting excused days"><b id="sAvg">0%</b><span>Avg attendance</span></div>
       </div>
       <div class="box"><h2>Needs attention</h2><div class="att" id="warn"></div></div>
     </aside>
@@ -220,7 +239,13 @@ const colorFor = s => { let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0
 const dayKey = d => { const t = new Date(d); return isNaN(t) ? '' : t.toISOString().slice(0,10); };
 const at = k => new Date(k + 'T00:00:00Z');
 const fmt = (k, y) => at(k).toLocaleDateString('en-US',{month:'short',day:'numeric',year:y ? 'numeric' : undefined,timeZone:'UTC'});
-const keys = r => [...new Set((r.attendance_dates || []).map(dayKey).filter(Boolean))].sort();
+const FIELD = { present:'attendance_dates', late:'late_dates', absent:'absent_dates', excused:'excused_dates' };
+const LABEL = { present:'Present', late:'Late', absent:'Absent', excused:'Excused' };
+const smapCache = new WeakMap();
+const smap = r => { let m = smapCache.get(r); if (!m){ m = {}; for (const s in FIELD) (r[FIELD[s]] || []).forEach(d => { const k = dayKey(d); if (k) m[k] = s; }); smapCache.set(r, m); } return m; };
+const statusOn = (r, k) => smap(r)[k] || '';
+const rec = r => Object.keys(smap(r)).sort();
+const keys = r => { const m = smap(r); return Object.keys(m).filter(k => m[k] === 'present' || m[k] === 'late').sort(); };
 const same = (r, p) => r.student_name === p.student_name && r.subject_name === p.subject_name && r.section === p.section;
 const payload = (r, date) => ({ student_name: r.student_name, subject_name: r.subject_name, section: r.section, date });
 const shift = (k, n) => { const d = at(k); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0,10); };
@@ -252,7 +277,7 @@ function fillSelect(id, label, vals){
 function streakOf(r, ds){ const ks = keys(r); let n = 0; for (let i = ds.length - 1; i >= 0 && ks.includes(ds[i]); i--) n++; return n; }
 function updateSel(){
   const n = sel.size, all = shownNow.length && shownNow.every(r => sel.has(r._id));
-  $('selBtn').textContent = 'Mark selected present (' + n + ')'; $('selBtn').disabled = !n;
+  $('selBtn').textContent = 'Apply to selected (' + n + ')'; $('selBtn').disabled = !n;
   $('selAll').textContent = all ? 'Clear selection' : 'Select all shown';
 }
 
@@ -264,23 +289,24 @@ function render(){
   $('sections').replaceChildren(...secs.map(s => { const o = el('option'); o.value = s; return o; }));
   [...sel].forEach(id => { if (!records.some(r => r._id === id)) sel.delete(id); });
 
-  const scoped = scopeOf(), days = [...new Set(scoped.flatMap(keys))].sort(), allDays = [...new Set(records.flatMap(keys))].sort(), ds = days.filter(k => k <= day);
-  const rate = r => days.length ? keys(r).filter(k => days.includes(k)).length / days.length : 0;
-  const has = r => keys(r).includes(day), present = scoped.filter(has), absent = scoped.filter(r => !has(r));
+  const scoped = scopeOf(), days = [...new Set(scoped.flatMap(rec))].sort(), allDays = [...new Set(records.flatMap(rec))].sort(), ds = days.filter(k => k <= day);
+  const rate = r => { const m = smap(r); let a = 0, n = 0; days.forEach(k => { if (m[k] === 'excused') return; n++; if (m[k] === 'present' || m[k] === 'late') a++; }); return n ? a / n : (days.length ? 1 : 0); };
+  const S = r => statusOn(r, day), has = r => S(r) === 'present' || S(r) === 'late';
+  const present = scoped.filter(has), absent = scoped.filter(r => S(r) === '' || S(r) === 'absent'), cnt = x => scoped.filter(r => S(r) === x).length;
   const base = scoped.filter(r => [r.student_name, r.subject_name, r.section].join(' ').toLowerCase().includes(q));
-  const shown = base.filter(r => !stat || (stat === 'p') === has(r)); shownNow = shown;
+  const shown = base.filter(r => !stat || S(r) === (stat === 'unmarked' ? '' : stat)); shownNow = shown;
   const m = $('sort').value, byName = (a,b) => a.student_name.localeCompare(b.student_name);
   shown.sort((a,b) => m === 'most' ? rate(b) - rate(a) || byName(a,b) : m === 'least' ? rate(a) - rate(b) || byName(a,b) : m === 'streak' ? streakOf(b, ds) - streakOf(a, ds) || byName(a,b) : byName(a,b));
 
   // chips + summary
-  $('cAll').textContent = base.length; $('cP').textContent = base.filter(has).length; $('cA').textContent = base.filter(r => !has(r)).length;
+  const bc = x => base.filter(r => S(r) === x).length; $('cAll').textContent = base.length; $('cPresent').textContent = bc('present'); $('cLate').textContent = bc('late'); $('cAbsent').textContent = bc('absent'); $('cExcused').textContent = bc('excused'); $('cUnm').textContent = bc('');
   document.querySelectorAll('.st').forEach(b => b.classList.toggle('on', b.dataset.st === stat));
   const pct = scoped.length ? Math.round(present.length / scoped.length * 100) : 0;
   $('sumTitle').textContent = day ? 'Session · ' + fmt(day, true) : 'Session';
   countUp($('gPct'), pct, '%'); $('ring').style.strokeDashoffset = 326.7 * (1 - pct / 100);
   $('gCnt').textContent = present.length + ' of ' + scoped.length + ' present';
-  $('gSub').textContent = absent.length && scoped.length ? absent.length + ' still absent' : (scoped.length ? 'Full attendance' : '');
-  $('allBtn').disabled = !absent.length || !day; $('noneBtn').disabled = !present.length; $('copyBtn').disabled = !absent.length;
+  $('gSub').textContent = scoped.length ? cnt('late') + ' late · ' + cnt('absent') + ' absent · ' + cnt('excused') + ' excused · ' + cnt('') + ' not marked' : '';
+  $('allBtn').disabled = $('restBtn').disabled = !cnt('') || !day; $('noneBtn').disabled = !scoped.some(r => S(r)); $('copyBtn').disabled = !scoped.length || !day;
   const avg = scoped.length && days.length ? Math.round(scoped.reduce((n, r) => n + rate(r), 0) / scoped.length * 100) : 0;
   countUp($('sStu'), records.length); countUp($('sSec'), secs.length); countUp($('sDays'), allDays.length); countUp($('sAvg'), avg, '%');
   $('count').textContent = records.length ? 'Showing ' + shown.length + ' of ' + records.length + ' students' : '';
@@ -302,7 +328,7 @@ function render(){
   const gm = $('group').value, keyOf = r => gm === 'section' ? r.section : gm === 'subject' ? r.subject_name : gm === 'both' ? r.section + ' · ' + r.subject_name : '';
   const groups = new Map(); shown.forEach(r => { const k = keyOf(r); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
   let i = 0;
-  const mkBtn = (r, is, small) => { const b = el('button','mk' + (is ? ' on' : '') + (small ? ' sm' : ''), is ? '✓ Present' : 'Mark present'); b.type = 'button'; b.disabled = !day; b.title = is ? 'Click to undo' : ''; b.onclick = e => { e.stopPropagation(); toggle(r, day); }; return b; };
+  const segCtl = (r, s, small) => { const g = el('div','sg' + (small ? ' sm' : '')); Object.keys(LABEL).forEach(k => { const b = el('button', k + (s === k ? ' on' : ''), LABEL[k]); b.type = 'button'; b.disabled = !day; b.title = s === k ? 'Click to clear' : 'Mark ' + LABEL[k].toLowerCase(); b.setAttribute('aria-pressed', s === k); b.onclick = e => { e.stopPropagation(); setSt(r, day, s === k ? '' : k); }; g.appendChild(b); }); return g; };
   const editBtn = (r, inl) => { const b = el('button','editb' + (inl ? ' inl' : ''),'✎'); b.type = 'button'; b.title = 'Edit student'; b.setAttribute('aria-label','Edit ' + r.student_name); b.onclick = e => { e.stopPropagation(); openEdit(r); }; return b; };
   const pick = (r, host) => { const c = el('input','pick'); c.type = 'checkbox'; c.checked = sel.has(r._id); c.setAttribute('aria-label','Select ' + r.student_name); c.onchange = () => { c.checked ? sel.add(r._id) : sel.delete(r._id); host.classList.toggle('sel', c.checked); updateSel(); }; host.classList.toggle('sel', c.checked); return c; };
   [...groups.keys()].sort().forEach(k => {
@@ -317,49 +343,55 @@ function render(){
       gr.forEach(r => { const is = has(r), tr = el('tr', is ? 'is' : ''), td = () => tr.appendChild(el('td')), rt = Math.round(rate(r) * 100);
         const c0 = td(); c0.appendChild(pick(r, tr)); c0.firstChild.style.position = 'static';
         td().textContent = r.student_name; tr.lastChild.className = 'n'; td().textContent = r.subject_name; td().textContent = r.section; td().textContent = keys(r).length;
-        const c5 = td(); c5.textContent = rt + '%'; if (days.length > 1 && rt < 75) c5.className = 'low'; td().textContent = streakOf(r, ds); td().appendChild(mkBtn(r, is, true)); td().appendChild(editBtn(r, true)); tb.appendChild(tr); });
+        const c5 = td(); c5.textContent = rt + '%'; if (days.length > 1 && rt < 75) c5.className = 'low'; td().textContent = streakOf(r, ds); td().appendChild(segCtl(r, S(r), true)); td().appendChild(editBtn(r, true)); tb.appendChild(tr); });
       t.appendChild(tb); tw.appendChild(t); box.appendChild(tw); return;
     }
     const grid = el('div','grid');
     gr.forEach(r => {
-      const ks = keys(r), is = ks.includes(day), rt = rate(r), p = Math.round(rt * 100), sk = streakOf(r, ds), low = days.length > 1 && rt < .75;
-      const c = el('article','card' + (is ? ' is' : '') + (first ? ' in' : '') + (r._id === popId ? ' pop' : ''));
+      const ks = keys(r), m = smap(r), s = m[day] || '', rt = rate(r), p = Math.round(rt * 100), sk = streakOf(r, ds), low = days.length > 1 && rt < .75;
+      const c = el('article','card' + (s ? ' s-' + s : '') + (first ? ' in' : '') + (r._id === popId ? ' pop' : ''));
       if (first) c.style.animationDelay = Math.min(i++, 16) * 35 + 'ms';
       const av = el('div','av',r.student_name.trim().charAt(0).toUpperCase()); av.style.setProperty('--c', colorFor(r.student_name));
       const tags = el('div','tags'); tags.append(el('span','tag',r.subject_name), el('span','tag',r.section));
       const who = el('div'); who.append(el('div','nm',r.student_name), tags); const w = el('div','who'); w.append(av, who);
-      const heat = el('div','heat'); ds.slice(-12).forEach(d => { const h = el('span','hc' + (ks.includes(d) ? ' on' : '')); h.title = fmt(d, true) + (ks.includes(d) ? ': present' : ': absent'); heat.appendChild(h); });
-      const meta = el('div','meta'), l = el('span'); l.append(el('b',null,ks.length + (ks.length === 1 ? ' day' : ' days')), document.createTextNode(' · '), el('span', low ? 'low' : '', p + '%'));
+      const heat = el('div','heat'); ds.slice(-12).forEach(d => { const h = el('span','hc ' + (m[d] || '')); h.title = fmt(d, true) + ': ' + (LABEL[m[d]] || 'Not marked'); heat.appendChild(h); });
+      const meta = el('div','meta'), l = el('span'); const cl = Object.values(m).filter(x => x === 'late').length, ca = Object.values(m).filter(x => x === 'absent').length;
+      l.append(el('b',null,ks.length + ' attended'), document.createTextNode(' · '), el('span', low ? 'low' : '', p + '%'), document.createTextNode((cl ? ' · ' + cl + ' late' : '') + (ca ? ' · ' + ca + ' absent' : '')));
+      const dts = el('div','dts'), rd = Object.keys(m).sort(); if (rd.length > 4) dts.appendChild(el('span',null,'+' + (rd.length - 4) + ' earlier'));
+      rd.slice(-4).forEach(k => { const x = el('span', m[k], fmt(k, true)); x.title = LABEL[m[k]]; dts.appendChild(x); }); if (!rd.length) dts.appendChild(el('span',null,'No dates yet'));
       meta.append(l); if (sk > 1) meta.appendChild(el('span','streak',sk + ' in a row'));
-      c.append(editBtn(r), pick(r, c), w, heat, meta, mkBtn(r, is)); grid.appendChild(c);
+      c.append(editBtn(r), pick(r, c), w, heat, dts, meta, segCtl(r, s)); grid.appendChild(c);
     });
     box.appendChild(grid);
   });
   first = false; popId = null;
 }
 
-async function api(method, p){
-  const res = await fetch(VERCEL_API_URL, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(p) });
+async function api(method, p, retried){
+  const key = store.get('key'), headers = { 'Content-Type': 'application/json' }; if (key) headers['x-api-key'] = key;
+  const res = await fetch(VERCEL_API_URL, { method, headers, body: JSON.stringify(p) });
+  if (res.status === 401 && !retried){ const k = prompt('This site is protected. Enter the passcode:'); if (k){ store.set('key', k.trim()); return api(method, p, true); } }
   if (!res.ok){ const j = await res.json().catch(() => ({})); throw new Error(j.error || 'Server returned ' + res.status + (res.status === 405 ? ' (redeploy the backend)' : '')); }
   return res.json();
 }
 async function act(method, p, o = {}){
-  const ex = records.find(r => same(r, p));
-  if (method === 'POST' && ex && keys(ex).includes(p.date)) { if (!o.quiet) toast('Already marked present'); return false; }
+  const ex = records.find(r => same(r, p)), prev = ex ? statusOn(ex, p.date) : '', want = method === 'POST' ? (p.status || 'present') : '';
+  if (ex && prev === want) { if (!o.quiet) toast(want ? 'Already ' + want : 'Already cleared'); return false; }
   pending++;
   try{
     const doc = await api(method, p), i = records.findIndex(r => r._id === doc._id);
     if (i > -1) records[i] = doc; else records.push(doc);
     setStatus(true); popId = doc._id;
     if (!o.quiet){
-      render(); const card = document.querySelector('.card.pop'); if (card && method === 'POST') burst(card);
-      toast(method === 'POST' ? doc.student_name + ' marked present' : 'Removed ' + fmt(p.date) + ' for ' + doc.student_name, o.noUndo ? null : () => act(method === 'POST' ? 'DELETE' : 'POST', p, { noUndo: true }));
+      render(); const card = document.querySelector('.card.pop'); if (card && want === 'present') burst(card);
+      const back = () => prev ? act('POST', { ...p, status: prev }, { noUndo: true }) : act('DELETE', p, { noUndo: true });
+      toast(want ? doc.student_name + ': ' + want : 'Cleared ' + fmt(p.date) + ' for ' + doc.student_name, o.noUndo ? null : back);
     }
     return true;
   }catch(err){ setStatus(false); toast('Could not save: ' + err.message); return false; }
   finally{ pending--; }
 }
-const toggle = (r, day) => day ? act(keys(r).includes(day) ? 'DELETE' : 'POST', payload(r, day)) : toast('Pick a session date first');
+const setSt = (r, day, s) => day ? (s ? act('POST', { ...payload(r, day), status: s }) : act('DELETE', payload(r, day))) : toast('Pick a session date first');
 
 async function loadRecords(silent){
   if (!silent){ const g = el('div','grid'); for (let i = 0; i < 6; i++) g.appendChild(el('div','skel')); $('list').replaceChildren(g); }
@@ -377,32 +409,49 @@ async function loadRecords(silent){
   }finally{ $('refresh').classList.remove('spin'); }
 }
 
-async function bulk(method, todo, label){
+async function bulk(status, todo, label){
   const day = $('date').value;
   if (!todo.length) return toast('Nothing to change for this date');
   if (!confirm(label + ' ' + todo.length + (todo.length === 1 ? ' student' : ' students') + ' on ' + fmt(day, true) + '?')) return;
-  let n = 0; toast('Working…');
-  for (const r of todo){ if (await act(method, payload(r, day), { quiet: true })) n++; }
-  sel.clear(); render(); toast(n + (n === 1 ? ' student' : ' students') + (method === 'POST' ? ' marked present' : ' cleared'), async () => { for (const r of todo) await act(method === 'POST' ? 'DELETE' : 'POST', payload(r, day), { quiet: true }); render(); toast('Reverted'); });
+  const prevs = todo.map(r => [r, statusOn(r, day)]); let n = 0; toast('Working…');
+  for (const r of todo){ if (await act(status ? 'POST' : 'DELETE', status ? { ...payload(r, day), status } : payload(r, day), { quiet: true })) n++; }
+  sel.clear(); render();
+  toast(n + (n === 1 ? ' student' : ' students') + ' updated', async () => { for (const [r, s] of prevs){ const cur = records.find(x => x._id === r._id) || r; await act(s ? 'POST' : 'DELETE', s ? { ...payload(cur, day), status: s } : payload(cur, day), { quiet: true }); } render(); toast('Reverted'); });
 }
-const absentList = () => { const day = $('date').value; return scopeOf().filter(r => !keys(r).includes(day)); };
+const absentList = () => { const day = $('date').value; return scopeOf().filter(r => ['', 'absent'].includes(statusOn(r, day))); };
+const unmarkedList = () => { const day = $('date').value; return scopeOf().filter(r => !statusOn(r, day)); };
 
 function exportCsv(){
   const sc = scopeOf(); if (!sc.length) return toast('Nothing to export yet.');
-  const days = [...new Set(sc.flatMap(keys))].sort(), q = v => '"' + String(v).replace(/"/g,'""') + '"';
-  const rows = [['Student','Subject','Section',...days.map(k => fmt(k, true)),'Days present','Rate'].map(q).join(',')];
-  sc.forEach(r => { const ks = keys(r); rows.push([r.student_name, r.subject_name, r.section, ...days.map(k => ks.includes(k) ? 'P' : 'A'), ks.length, days.length ? Math.round(ks.filter(k => days.includes(k)).length / days.length * 100) + '%' : '0%'].map(q).join(',')); });
+  const days = [...new Set(sc.flatMap(rec))].sort(), q = v => '"' + String(v).replace(/"/g,'""') + '"', L = { present:'P', late:'L', absent:'A', excused:'E' };
+  const rows = [['Student','Subject','Section',...days.map(k => fmt(k, true)),'Present','Late','Absent','Excused','Rate'].map(q).join(',')];
+  sc.forEach(r => { const m = smap(r), v = Object.values(m), c = x => v.filter(y => y === x).length, den = days.length - c('excused');
+    rows.push([r.student_name, r.subject_name, r.section, ...days.map(k => L[m[k]] || ''), c('present'), c('late'), c('absent'), c('excused'), den > 0 ? Math.round((c('present') + c('late')) / den * 100) + '%' : '0%'].map(q).join(',')); });
   const a = el('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + rows.join('\n')], { type: 'text/csv' })); a.download = 'attendance-' + todayKey() + '.csv'; a.click(); URL.revokeObjectURL(a.href); toast('CSV downloaded');
 }
 async function copyAbsent(){
-  const day = $('date').value, list = absentList().map(r => r.student_name).sort();
-  try { await navigator.clipboard.writeText('Absent on ' + fmt(day, true) + ' (' + list.length + '):\n' + list.join('\n')); toast('Absent list copied'); } catch(e){ toast('Copy is not available in this browser'); }
+  const day = $('date').value, sc = scopeOf();
+  if (!day || !sc.length) return toast('Nothing to copy yet');
+  const S = r => statusOn(r, day), byName = (a, b) => a.student_name.localeCompare(b.student_name), total = x => sc.filter(r => S(r) === x).length, groups = new Map();
+  sc.forEach(r => { const k = r.section + ' - ' + r.subject_name; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
+  const out = ['ATTENDANCE REPORT', at(day).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric',timeZone:'UTC'}), '',
+    'Present ' + total('present') + ' | Late ' + total('late') + ' | Absent ' + total('absent') + ' | Excused ' + total('excused') + ' | Not marked ' + total('') + '  (' + sc.length + ' students)'];
+  [...groups.keys()].sort().forEach(k => {
+    const gr = groups.get(k), here = gr.filter(r => S(r) === 'present' || S(r) === 'late').length; let any = false;
+    out.push('', k + '  [' + here + '/' + gr.length + ' present]');
+    [['absent','Absent'],['','Not marked'],['late','Late'],['excused','Excused']].forEach(([st, label]) => {
+      const list = gr.filter(r => S(r) === st).sort(byName); if (!list.length) return; any = true;
+      out.push('  ' + label + ' (' + list.length + '):'); list.forEach((r, i) => out.push('    ' + (i + 1) + '. ' + r.student_name));
+    });
+    if (!any) out.push('  Everyone present');
+  });
+  try { await navigator.clipboard.writeText(out.join('\n')); toast('Attendance report copied'); } catch(e){ toast('Copy is not available in this browser'); }
 }
 function setDay(k){ if (k) { $('date').value = k; render(); } }
 function setView(v){ view = v; store.set('view', v); $('vCards').classList.toggle('on', v === 'cards'); $('vSheet').classList.toggle('on', v === 'sheet'); render(); }
 function openDlg(){ if ($('fSubject').value) $('subject').value = $('fSubject').value; if ($('fSection').value) $('section').value = $('fSection').value; $('dlg').showModal(); $('student').focus(); }
 function setTheme(t){ document.documentElement.dataset.theme = t; store.set('theme', t); }
-const recorded = () => [...new Set(records.flatMap(keys))].sort();
+const recorded = () => [...new Set(records.flatMap(rec))].sort();
 
 let editing = null;
 function openEdit(r){ editing = r; $('eName').value = r.student_name; $('eSubject').value = r.subject_name; $('eSection').value = r.section; $('edlg').showModal(); $('eName').focus(); }
@@ -433,8 +482,8 @@ $('eDelete').onclick = async () => {
 $('eCancel').onclick = () => $('edlg').close();
 $('edlg').addEventListener('click', e => { if (e.target === $('edlg')) $('edlg').close(); });
 $('addBtn').onclick = openDlg; $('csvBtn').onclick = exportCsv; $('copyBtn').onclick = copyAbsent; $('refresh').onclick = () => loadRecords(true);
-$('allBtn').onclick = () => bulk('POST', absentList(), 'Mark'); $('noneBtn').onclick = () => bulk('DELETE', scopeOf().filter(r => keys(r).includes($('date').value)), 'Clear');
-$('selBtn').onclick = () => { const day = $('date').value; bulk('POST', records.filter(r => sel.has(r._id) && !keys(r).includes(day)), 'Mark'); };
+$('allBtn').onclick = () => bulk('present', unmarkedList(), 'Mark as present:'); $('restBtn').onclick = () => bulk('absent', unmarkedList(), 'Mark as absent:'); $('noneBtn').onclick = () => bulk('', scopeOf().filter(r => statusOn(r, $('date').value)), 'Clear');
+$('selBtn').onclick = () => bulk($('selSt').value, records.filter(r => sel.has(r._id)), 'Set ' + $('selSt').value + ' for');
 $('selAll').onclick = () => { const all = shownNow.every(r => sel.has(r._id)); shownNow.forEach(r => all ? sel.delete(r._id) : sel.add(r._id)); render(); };
 $('first').onclick = () => { const d = recorded(); d.length ? setDay(d[0]) : toast('No sessions recorded yet'); };
 $('last').onclick = () => { const d = recorded(); d.length ? setDay(d[d.length - 1]) : toast('No sessions recorded yet'); };
