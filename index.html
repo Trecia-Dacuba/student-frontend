@@ -65,7 +65,11 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .card.pop{animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
 @keyframes pop{40%{transform:scale(1.04)}}
 .pick{position:absolute;right:14px;top:14px;width:18px;height:18px;accent-color:var(--g2);cursor:pointer}
-.who{display:flex;gap:12px;align-items:center;padding-right:28px}
+.editb{position:absolute;right:42px;top:10px;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;transition:color .2s,border-color .2s,transform .15s}
+.editb:hover{color:var(--g2);border-color:var(--g2);transform:rotate(-8deg)}.editb.inl{position:static}
+.gedit{border:0;background:transparent;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;padding:2px 8px;border-radius:8px}.gedit:hover{background:var(--soft);color:var(--g2)}
+.pb.danger{background:transparent;color:var(--warn);border:1px solid var(--warn)}.dacts .del{margin-right:auto}
+.who{display:flex;gap:12px;align-items:center;padding-right:64px}
 .av{flex:0 0 44px;height:44px;border-radius:14px;display:grid;place-items:center;color:#fff;font-family:var(--serif);font-weight:700;font-size:1.15rem;background:var(--c)}
 .nm{font-weight:700;line-height:1.25;overflow-wrap:anywhere}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
@@ -192,6 +196,15 @@ label{display:block;font-weight:600;font-size:.84rem;margin:0 0 4px}.field{margi
     <div class="dacts"><button class="pb gh2" id="cancel" type="button">Cancel</button><button class="pb" id="submitBtn" type="submit">Save and mark</button></div>
   </form>
 </dialog>
+<dialog id="edlg">
+  <form id="eForm" autocomplete="off">
+    <h2>Edit student</h2><p>Changes apply to this student's record. Their attendance dates stay the same.</p>
+    <div class="field"><label for="eName">Student name</label><input type="text" id="eName" maxlength="100" required></div>
+    <div class="field"><label for="eSubject">Subject name</label><input type="text" id="eSubject" maxlength="100" list="subjects" required></div>
+    <div class="field"><label for="eSection">Section</label><input type="text" id="eSection" maxlength="100" list="sections" required></div>
+    <div class="dacts"><button class="pb danger del" id="eDelete" type="button">Delete student</button><button class="pb gh2" id="eCancel" type="button">Cancel</button><button class="pb" id="eSave" type="submit">Save changes</button></div>
+  </form>
+</dialog>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -290,18 +303,21 @@ function render(){
   const groups = new Map(); shown.forEach(r => { const k = keyOf(r); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
   let i = 0;
   const mkBtn = (r, is, small) => { const b = el('button','mk' + (is ? ' on' : '') + (small ? ' sm' : ''), is ? '✓ Present' : 'Mark present'); b.type = 'button'; b.disabled = !day; b.title = is ? 'Click to undo' : ''; b.onclick = e => { e.stopPropagation(); toggle(r, day); }; return b; };
+  const editBtn = (r, inl) => { const b = el('button','editb' + (inl ? ' inl' : ''),'✎'); b.type = 'button'; b.title = 'Edit student'; b.setAttribute('aria-label','Edit ' + r.student_name); b.onclick = e => { e.stopPropagation(); openEdit(r); }; return b; };
   const pick = (r, host) => { const c = el('input','pick'); c.type = 'checkbox'; c.checked = sel.has(r._id); c.setAttribute('aria-label','Select ' + r.student_name); c.onchange = () => { c.checked ? sel.add(r._id) : sel.delete(r._id); host.classList.toggle('sel', c.checked); updateSel(); }; host.classList.toggle('sel', c.checked); return c; };
   [...groups.keys()].sort().forEach(k => {
     const gr = groups.get(k);
-    if (k){ const h = el('h3','gh', k); h.appendChild(el('small',null, gr.filter(has).length + ' / ' + gr.length + ' present')); box.appendChild(h); }
+    if (k){ const h = el('h3','gh', k); h.appendChild(el('small',null, gr.filter(has).length + ' / ' + gr.length + ' present'));
+      if (gm === 'section' || gm === 'subject'){ const rb2 = el('button','gedit','✎ Rename'); rb2.type = 'button'; rb2.title = 'Rename for all students in this group'; rb2.onclick = () => renameGroup(gm === 'section' ? 'section' : 'subject_name', k); h.appendChild(rb2); }
+      box.appendChild(h); }
     if (view === 'sheet'){
       const tw = el('div','tw'), t = el('table'), hd = el('tr');
-      ['','Student','Subject','Section','Days','Rate','Streak','Status'].forEach(x => hd.appendChild(el('th',null,x))); t.appendChild(el('thead')).appendChild(hd);
+      ['','Student','Subject','Section','Days','Rate','Streak','Status',''].forEach(x => hd.appendChild(el('th',null,x))); t.appendChild(el('thead')).appendChild(hd);
       const tb = el('tbody');
       gr.forEach(r => { const is = has(r), tr = el('tr', is ? 'is' : ''), td = () => tr.appendChild(el('td')), rt = Math.round(rate(r) * 100);
         const c0 = td(); c0.appendChild(pick(r, tr)); c0.firstChild.style.position = 'static';
         td().textContent = r.student_name; tr.lastChild.className = 'n'; td().textContent = r.subject_name; td().textContent = r.section; td().textContent = keys(r).length;
-        const c5 = td(); c5.textContent = rt + '%'; if (days.length > 1 && rt < 75) c5.className = 'low'; td().textContent = streakOf(r, ds); td().appendChild(mkBtn(r, is, true)); tb.appendChild(tr); });
+        const c5 = td(); c5.textContent = rt + '%'; if (days.length > 1 && rt < 75) c5.className = 'low'; td().textContent = streakOf(r, ds); td().appendChild(mkBtn(r, is, true)); td().appendChild(editBtn(r, true)); tb.appendChild(tr); });
       t.appendChild(tb); tw.appendChild(t); box.appendChild(tw); return;
     }
     const grid = el('div','grid');
@@ -315,7 +331,7 @@ function render(){
       const heat = el('div','heat'); ds.slice(-12).forEach(d => { const h = el('span','hc' + (ks.includes(d) ? ' on' : '')); h.title = fmt(d, true) + (ks.includes(d) ? ': present' : ': absent'); heat.appendChild(h); });
       const meta = el('div','meta'), l = el('span'); l.append(el('b',null,ks.length + (ks.length === 1 ? ' day' : ' days')), document.createTextNode(' · '), el('span', low ? 'low' : '', p + '%'));
       meta.append(l); if (sk > 1) meta.appendChild(el('span','streak',sk + ' in a row'));
-      c.append(pick(r, c), w, heat, meta, mkBtn(r, is)); grid.appendChild(c);
+      c.append(editBtn(r), pick(r, c), w, heat, meta, mkBtn(r, is)); grid.appendChild(c);
     });
     box.appendChild(grid);
   });
@@ -324,7 +340,7 @@ function render(){
 
 async function api(method, p){
   const res = await fetch(VERCEL_API_URL, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(p) });
-  if (!res.ok) throw new Error('Server returned ' + res.status + (method === 'DELETE' && res.status === 405 ? ' (redeploy the backend to enable undo)' : ''));
+  if (!res.ok){ const j = await res.json().catch(() => ({})); throw new Error(j.error || 'Server returned ' + res.status + (res.status === 405 ? ' (redeploy the backend)' : '')); }
   return res.json();
 }
 async function act(method, p, o = {}){
@@ -388,6 +404,34 @@ function openDlg(){ if ($('fSubject').value) $('subject').value = $('fSubject').
 function setTheme(t){ document.documentElement.dataset.theme = t; store.set('theme', t); }
 const recorded = () => [...new Set(records.flatMap(keys))].sort();
 
+let editing = null;
+function openEdit(r){ editing = r; $('eName').value = r.student_name; $('eSubject').value = r.subject_name; $('eSection').value = r.section; $('edlg').showModal(); $('eName').focus(); }
+async function renameGroup(field, from){
+  const to = (prompt('Rename "' + from + '" for all its students:', from) || '').trim();
+  if (!to || to === from) return;
+  pending++;
+  try{ await api('PATCH', { rename: { field, from, to } }); records.forEach(r => { if (r[field] === from) r[field] = to; }); setStatus(true); render(); toast('Renamed to ' + to); }
+  catch(err){ toast('Could not rename: ' + err.message); }
+  finally{ pending--; }
+}
+$('eForm').addEventListener('submit', async e => {
+  e.preventDefault(); const b = $('eSave'); b.disabled = true; pending++;
+  try{
+    const doc = await api('PATCH', { id: editing._id, student_name: $('eName').value, subject_name: $('eSubject').value, section: $('eSection').value });
+    const i = records.findIndex(r => r._id === doc._id); if (i > -1) records[i] = doc;
+    setStatus(true); $('edlg').close(); render(); toast('Saved changes for ' + doc.student_name);
+  }catch(err){ toast('Could not save: ' + err.message); }
+  finally{ b.disabled = false; pending--; }
+});
+$('eDelete').onclick = async () => {
+  if (!editing || !confirm('Delete ' + editing.student_name + ' and all their attendance dates? This cannot be undone.')) return;
+  pending++;
+  try{ await api('DELETE', { student_id: editing._id }); records = records.filter(r => r._id !== editing._id); sel.delete(editing._id); setStatus(true); $('edlg').close(); render(); toast('Student deleted'); }
+  catch(err){ toast('Could not delete: ' + err.message); }
+  finally{ pending--; }
+};
+$('eCancel').onclick = () => $('edlg').close();
+$('edlg').addEventListener('click', e => { if (e.target === $('edlg')) $('edlg').close(); });
 $('addBtn').onclick = openDlg; $('csvBtn').onclick = exportCsv; $('copyBtn').onclick = copyAbsent; $('refresh').onclick = () => loadRecords(true);
 $('allBtn').onclick = () => bulk('POST', absentList(), 'Mark'); $('noneBtn').onclick = () => bulk('DELETE', scopeOf().filter(r => keys(r).includes($('date').value)), 'Clear');
 $('selBtn').onclick = () => { const day = $('date').value; bulk('POST', records.filter(r => sel.has(r._id) && !keys(r).includes(day)), 'Mark'); };
@@ -411,7 +455,7 @@ $('dataForm').addEventListener('submit', async e => {
 $('search').addEventListener('input', render);
 $('themeBtn').onclick = () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
 document.addEventListener('keydown', e => {
-  if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) || $('dlg').open || e.metaKey || e.ctrlKey) return;
+  if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) || $('dlg').open || $('edlg').open || e.metaKey || e.ctrlKey) return;
   if (e.key === '/') { e.preventDefault(); $('search').focus(); }
   else if (e.key === 'ArrowLeft') $('prev').click(); else if (e.key === 'ArrowRight') $('next').click();
 });
