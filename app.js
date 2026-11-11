@@ -2,7 +2,8 @@
 const VERCEL_API_URL = window.APP_CONFIG.API_URL;
 
 const $ = id => document.getElementById(id);
-const COLORS = ['#0f5c46','#b5762a','#2f6f9f','#9a4a6b','#5b4b9a','#5c7a2e'];
+const COLORS = ['#1f6f57','#a8702a','#3a6ea5','#8d4a68','#5b509e','#5f7a35'];
+const PENCIL = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 00-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>';
 const sel = new Set();
 let records = [], first = true, popId = null, pending = 0, view = 'cards', stat = '', shownNow = [];
 
@@ -84,6 +85,7 @@ function render(){
   document.querySelectorAll('.st').forEach(b => b.classList.toggle('on', b.dataset.st === stat));
   const pct = scoped.length ? Math.round(present.length / scoped.length * 100) : 0;
   $('sumTitle').textContent = day ? 'Session · ' + fmt(day, true) : 'Session';
+  $('pDate').textContent = day ? at(day).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric',timeZone:'UTC'}) : 'Pick a session date';
   countUp($('gPct'), pct, '%'); $('ring').style.strokeDashoffset = 326.7 * (1 - pct / 100);
   $('gCnt').textContent = present.length + ' of ' + scoped.length + ' present';
   $('gSub').textContent = scoped.length ? cnt('late') + ' late · ' + cnt('absent') + ' absent · ' + cnt('excused') + ' excused · ' + cnt('') + ' not marked' : '';
@@ -109,15 +111,16 @@ function render(){
   const gm = $('group').value, keyOf = r => gm === 'section' ? r.section : gm === 'subject' ? r.subject_name : gm === 'both' ? r.section + ' · ' + r.subject_name : '';
   const groups = new Map(); shown.forEach(r => { const k = keyOf(r); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
   let i = 0;
-  const editBtn = (r, inl) => { const b = el('button','editb' + (inl ? ' inl' : ''),'✎'); b.type = 'button'; b.title = 'Edit student'; b.setAttribute('aria-label','Edit ' + r.student_name); b.onclick = e => { e.stopPropagation(); openEdit(r); }; return b; };
+  const editBtn = (r, inl) => { const b = el('button','editb' + (inl ? ' inl' : '')); b.innerHTML = PENCIL; b.type = 'button'; b.title = 'Edit student'; b.setAttribute('aria-label','Edit ' + r.student_name); b.onclick = e => { e.stopPropagation(); openEdit(r); }; return b; };
   const pick = (r, host) => { const c = el('input','pick'); c.type = 'checkbox'; c.checked = sel.has(r._id); c.setAttribute('aria-label','Select ' + r.student_name); c.onchange = () => { c.checked ? sel.add(r._id) : sel.delete(r._id); host.classList.toggle('sel', c.checked); updateSel(); }; host.classList.toggle('sel', c.checked); return c; };
   [...groups.keys()].sort().forEach(k => {
     const gr = groups.get(k);
     if (k){ const h = el('h3','gh', k); h.appendChild(el('small',null, gr.filter(has).length + ' / ' + gr.length + ' present'));
-      if (gm === 'section' || gm === 'subject'){ const rb2 = el('button','gedit','✎ Rename'); rb2.type = 'button'; rb2.title = 'Rename for all students in this group'; rb2.onclick = () => renameGroup(gm === 'section' ? 'section' : 'subject_name', k); h.appendChild(rb2); }
+      const gb = el('span','gbar'); gb.style.setProperty('--p', Math.round(gr.filter(has).length / gr.length * 100) + '%');
+      if (gm === 'section' || gm === 'subject'){ const rb2 = el('button','gedit','Rename'); rb2.type = 'button'; rb2.title = 'Rename for all students in this group'; rb2.onclick = () => renameGroup(gm === 'section' ? 'section' : 'subject_name', k); h.appendChild(rb2); }
       const gsu = [...new Set(gr.map(x => x.subject_name))], gse = [...new Set(gr.map(x => x.section))];
       const pre = { subject: gsu.length === 1 ? gsu[0] : (gm === 'subject' ? k : ''), section: gse.length === 1 ? gse[0] : (gm === 'section' ? k : '') };
-      const ab = el('button','gedit gadd','+ Add student'); ab.type = 'button'; ab.title = 'Add a student to ' + k; ab.onclick = () => openDlg(pre); h.appendChild(ab);
+      const ab = el('button','gedit gadd','+ Add student'); ab.type = 'button'; ab.title = 'Add a student to ' + k; ab.onclick = () => openDlg(pre); h.appendChild(ab); h.appendChild(gb);
       box.appendChild(h); }
     if (view === 'sheet'){
       const tw = el('div','tw'), t = el('table'), hd = el('tr');
@@ -166,7 +169,7 @@ async function act(method, p, o = {}){
     if (i > -1) records[i] = doc; else records.push(doc);
     setStatus(true); popId = doc._id;
     if (!o.quiet){
-      render(); const card = document.querySelector('.card.pop'); if (card && want === 'present') burst(card);
+      render(); 
       const back = () => prev ? act('POST', { ...p, status: prev }, { noUndo: true }) : act('DELETE', p, { noUndo: true });
       toast(want ? doc.student_name + ': ' + want : 'Cleared ' + fmt(p.date) + ' for ' + doc.student_name, o.noUndo ? null : back);
     }
@@ -233,7 +236,7 @@ async function copyAbsent(){
 }
 function setDay(k){ if (k) { $('date').value = k; render(); } }
 function setView(v){ view = v; store.set('view', v); $('vCards').classList.toggle('on', v === 'cards'); $('vSheet').classList.toggle('on', v === 'sheet'); render(); }
-function openDlg(pre){ if (pre && typeof pre.subject === 'string'){ $('subject').value = pre.subject; $('section').value = pre.section; } else { if ($('fSubject').value) $('subject').value = $('fSubject').value; if ($('fSection').value) $('section').value = $('fSection').value; } $('dlg').showModal(); $('student').focus(); }
+function openDlg(pre){ if (pre && typeof pre.subject === 'string'){ $('subject').value = pre.subject; $('section').value = pre.section; } else { if ($('fSubject').value) $('subject').value = $('fSubject').value; if ($('fSection').value) $('section').value = $('fSection').value; } $('addDate').value = $('date').value || todayKey(); $('dlg').showModal(); $('student').focus(); }
 function setTheme(t){ document.documentElement.dataset.theme = t; store.set('theme', t); }
 const recorded = () => [...new Set(records.flatMap(rec))].sort();
 
@@ -324,10 +327,11 @@ $('cancel').onclick = () => $('dlg').close();
 $('dlg').addEventListener('click', e => { if (e.target === $('dlg')) $('dlg').close(); });
 $('dataForm').addEventListener('submit', async e => {
   e.preventDefault();
+  const day = $('addDate').value; if (!day) return toast('Pick a date for this record');
   const btn = $('submitBtn'), label = btn.textContent; btn.disabled = true; btn.textContent = 'Saving…';
-  const ok = await act('POST', { student_name: $('student').value.trim(), subject_name: $('subject').value.trim(), section: $('section').value.trim(), date: $('date').value });
+  const ok = await act('POST', { student_name: $('student').value.trim(), subject_name: $('subject').value.trim(), section: $('section').value.trim(), date: day });
   btn.disabled = false; btn.textContent = label;
-  if (ok){ $('student').value = ''; $('dlg').close(); }
+  if (ok){ $('student').value = ''; $('dlg').close(); if (day !== $('date').value) setDay(day); }
 });
 ['date','fSection','fSubject'].forEach(id => $(id).addEventListener('change', render));
 ['group','sort'].forEach(id => $(id).addEventListener('change', () => { store.set(id, $(id).value); render(); }));
@@ -339,6 +343,11 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowLeft') $('prev').click(); else if (e.key === 'ArrowRight') $('next').click();
 });
 setInterval(() => { if (!document.hidden && !pending) loadRecords(true); }, 45000);
+
+const menu = open => document.body.classList.toggle('menu-open', open);
+$('menuBtn').onclick = () => menu(true); $('railClose').onclick = () => menu(false); $('scrim').onclick = () => menu(false);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') menu(false); });
+matchMedia('(min-width:1081px)').addEventListener('change', e => { if (e.matches) menu(false); });
 
 setTheme(store.get('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 ['group','sort'].forEach(id => { const v = store.get(id); if (v && [...$(id).options].some(o => o.value === v)) $(id).value = v; });

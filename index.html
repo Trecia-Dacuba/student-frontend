@@ -2,87 +2,129 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Lab Attendance</title>
+<meta name="theme-color" content="#0b2f25">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=1">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
-<header class="top"><div class="in">
-  <div class="brand"><span class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>Lab Attendance</div>
-  <div class="nav">
-    <button class="hb" id="first" type="button" aria-label="First recorded session" title="First session">⏮</button>
-    <button class="hb" id="prev" type="button" aria-label="Previous day" title="Previous day (←)">◀</button>
-    <input type="date" id="date" aria-label="Session date" required>
-    <button class="hb" id="next" type="button" aria-label="Next day" title="Next day (→)">▶</button>
-    <button class="hb" id="last" type="button" aria-label="Latest recorded session" title="Latest session">⏭</button>
-    <button class="hb" id="today" type="button">Today</button>
-  </div>
-  <div class="right">
-    <span class="pill" id="status"><span class="dot"></span><span id="statusText">Connecting…</span></span>
-    <button class="hb" id="refresh" type="button" aria-label="Refresh records" title="Refresh">⟳</button>
-    <button class="hb" id="csvBtn" type="button" aria-label="Export CSV" title="Export CSV">⭳</button>
-    <button class="hb" id="themeBtn" type="button" aria-label="Toggle dark mode" title="Dark mode">◐</button>
-    <button class="hb gold" id="addBtn" type="button">+ Add student</button>
-  </div>
-</div></header>
+<div class="shell">
 
-<div class="wrap">
-  <div class="ribbon" id="ribbon" aria-label="Recorded sessions"></div>
-  <div class="layout">
-    <main>
+  <!-- ============ Sidebar ============ -->
+  <aside class="rail" id="rail" aria-label="Session tools">
+    <div class="rail-head">
+      <div class="brand">
+        <span class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></span>
+        <span class="brand-text"><b>Lab Attendance</b><small>Admin portal</small></span>
+      </div>
+      <button class="icon rail-x" id="railClose" type="button" aria-label="Close menu"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+
+    <section class="rbox">
+      <h2 id="sumTitle">Session</h2>
+      <div class="sum">
+        <div class="ring"><svg viewBox="0 0 120 120" width="104" height="104" aria-hidden="true"><circle class="t" cx="60" cy="60" r="52"/><circle class="f" id="ring" cx="60" cy="60" r="52"/></svg><b id="gPct">0%</b></div>
+        <div class="sum-t"><strong id="gCnt">0 of 0 present</strong><span id="gSub"></span></div>
+      </div>
+      <div class="btns">
+        <button class="pb main" id="allBtn" type="button">Mark everyone present</button>
+        <button class="pb gh2" id="restBtn" type="button">Mark unmarked as absent</button>
+        <div class="selrow"><select id="selSt" aria-label="Status for selected students"><option value="present">Present</option><option value="late">Late</option><option value="absent">Absent</option><option value="excused">Excused</option></select><button class="pb gd" id="selBtn" type="button">Apply to selected (0)</button></div>
+        <div class="btn-pair">
+          <button class="pb gh2" id="copyBtn" type="button">Copy report</button>
+          <button class="pb gh2" id="noneBtn" type="button">Clear day</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="rbox ov" aria-label="Overview">
+      <div><b id="sStu">0</b><span>Students</span></div>
+      <div><b id="sSec">0</b><span>Sections</span></div>
+      <div><b id="sDays">0</b><span>Lab days</span></div>
+      <div title="Present + late, not counting excused days"><b id="sAvg">0%</b><span>Avg attendance</span></div>
+    </section>
+
+    <section class="rbox">
+      <h2>Needs attention</h2>
+      <div class="thr">
+        <label>Below <input type="number" id="tPct" min="1" max="100"> %</label>
+        <label>or absent <input type="number" id="tRun" min="1" max="20"> in a row</label>
+      </div>
+      <div class="att" id="warn"></div>
+    </section>
+
+    <div class="rail-foot">
+      <span class="pill" id="status"><span class="dot"></span><span id="statusText">Connecting…</span></span>
+      <span class="tools-r">
+        <button class="icon" id="refresh" type="button" aria-label="Refresh records" title="Refresh"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 10-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
+        <button class="icon" id="csvBtn" type="button" aria-label="Export CSV" title="Export CSV"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg></button>
+        <button class="icon" id="themeBtn" type="button" aria-label="Toggle dark mode" title="Dark mode"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></button>
+      </span>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <!-- ============ Main ============ -->
+  <div class="page">
+    <header class="top">
+      <button class="icon menu" id="menuBtn" type="button" aria-label="Open menu" aria-controls="rail"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <div class="ttl"><h1>Attendance</h1><p id="pDate">Pick a session date</p></div>
+      <div class="nav" role="group" aria-label="Session date">
+        <button class="nb" id="first" type="button" aria-label="First recorded session" title="First session"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9.5 12z"/></svg></button>
+        <button class="nb" id="prev" type="button" aria-label="Previous day" title="Previous day (←)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <input type="date" id="date" aria-label="Session date" required>
+        <button class="nb" id="next" type="button" aria-label="Next day" title="Next day (→)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <button class="nb" id="last" type="button" aria-label="Latest recorded session" title="Latest session"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l10.5-7z"/></svg></button>
+        <button class="nb txt" id="today" type="button">Today</button>
+      </div>
+      <button class="add" id="addBtn" type="button"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="lbl">Add student</span></button>
+    </header>
+
+    <div class="wrap">
+      <div class="ribbon" id="ribbon" aria-label="Recorded sessions"></div>
+
       <div class="tools">
-        <input type="search" id="search" placeholder="Search students  ( press / )" aria-label="Search">
+        <label class="search"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="search" placeholder="Search students  ( press / )" aria-label="Search"></label>
         <select id="fSection" aria-label="Section"></select>
         <select id="fSubject" aria-label="Subject"></select>
         <select id="group" aria-label="Group by"><option value="section">Group by section</option><option value="subject">Group by subject</option><option value="both">Section + subject</option><option value="none">No grouping</option></select>
         <select id="sort" aria-label="Sort"><option value="az">Name A to Z</option><option value="most">Highest attendance</option><option value="least">Lowest attendance</option></select>
       </div>
+
       <div class="bar2">
-        <button class="st on" data-st="" type="button">All<span id="cAll">0</span></button>
-        <button class="st" data-st="present" type="button">Present<span id="cPresent">0</span></button>
-        <button class="st" data-st="late" type="button">Late<span id="cLate">0</span></button>
-        <button class="st" data-st="absent" type="button">Absent<span id="cAbsent">0</span></button>
-        <button class="st" data-st="excused" type="button">Excused<span id="cExcused">0</span></button>
-        <button class="st" data-st="unmarked" type="button">Not marked<span id="cUnm">0</span></button>
-        <button class="b2 sp" id="selAll" type="button">Select all shown</button>
-        <div class="seg"><button id="vCards" class="on" type="button">Cards</button><button id="vSheet" type="button">Sheet</button></div>
+        <div class="chips">
+          <button class="st on" data-st="" type="button">All<span id="cAll">0</span></button>
+          <button class="st" data-st="present" type="button">Present<span id="cPresent">0</span></button>
+          <button class="st" data-st="late" type="button">Late<span id="cLate">0</span></button>
+          <button class="st" data-st="absent" type="button">Absent<span id="cAbsent">0</span></button>
+          <button class="st" data-st="excused" type="button">Excused<span id="cExcused">0</span></button>
+          <button class="st" data-st="unmarked" type="button">Not marked<span id="cUnm">0</span></button>
+        </div>
+        <div class="bar-r">
+          <button class="b2" id="selAll" type="button">Select all shown</button>
+          <div class="seg" role="group" aria-label="View"><button id="vCards" class="on" type="button">Cards</button><button id="vSheet" type="button">Sheet</button></div>
+        </div>
       </div>
       <p class="count" id="count"></p>
       <div id="list"></div>
-    </main>
-
-    <aside class="side">
-      <div class="box">
-        <h2 id="sumTitle">Session</h2>
-        <div class="sum"><div class="ring"><svg viewBox="0 0 120 120" width="112" height="112"><circle class="t" cx="60" cy="60" r="52"/><circle class="f" id="ring" cx="60" cy="60" r="52"/></svg><b id="gPct">0%</b></div>
-          <div><strong id="gCnt">0 of 0 present</strong><span id="gSub"></span></div></div>
-        <div class="btns">
-          <button class="pb" id="allBtn" type="button">Mark everyone present</button>
-          <button class="pb gh2" id="restBtn" type="button">Mark unmarked as absent</button>
-          <div class="selrow"><select id="selSt" aria-label="Status for selected students"><option value="present">Present</option><option value="late">Late</option><option value="absent">Absent</option><option value="excused">Excused</option></select><button class="pb gd" id="selBtn" type="button">Apply to selected (0)</button></div>
-          <button class="pb gh2" id="copyBtn" type="button">Copy attendance report</button>
-          <button class="pb gh2" id="noneBtn" type="button">Clear this day</button>
-        </div>
-      </div>
-      <div class="box ov">
-        <div><b id="sStu">0</b><span>Students</span></div><div><b id="sSec">0</b><span>Sections</span></div>
-        <div><b id="sDays">0</b><span>Lab days</span></div><div title="Present + late, not counting excused days"><b id="sAvg">0%</b><span>Avg attendance</span></div>
-      </div>
-      <div class="box"><h2>Needs attention</h2><div class="thr"><label>Below <input type="number" id="tPct" min="1" max="100"> %</label><label>or absent <input type="number" id="tRun" min="1" max="20"> in a row</label></div><div class="att" id="warn"></div></div>
-    </aside>
+    </div>
   </div>
 </div>
 
+<!-- ============ Dialogs ============ -->
 <dialog id="dlg">
   <form id="dataForm" autocomplete="off">
-    <h2>Add student</h2><p>They are marked present on the selected session date.</p>
+    <h2>Add student</h2><p>The student is saved and marked present on the date below.</p>
     <div class="field"><label for="student">Student name</label><input type="text" id="student" maxlength="100" placeholder="e.g. Juan Dela Cruz" required></div>
-    <div class="field"><label for="subject">Subject name</label><input type="text" id="subject" maxlength="100" list="subjects" placeholder="e.g. Database 2" required><datalist id="subjects"></datalist></div>
-    <div class="field"><label for="section">Section</label><input type="text" id="section" maxlength="100" list="sections" placeholder="e.g. BSIT-3109" required><datalist id="sections"></datalist></div>
-    <p><button class="gedit" id="toBulk" type="button">Add several students at once</button></p>
+    <div class="two">
+      <div class="field"><label for="subject">Subject name</label><input type="text" id="subject" maxlength="100" list="subjects" placeholder="e.g. Database 2" required><datalist id="subjects"></datalist></div>
+      <div class="field"><label for="section">Section</label><input type="text" id="section" maxlength="100" list="sections" placeholder="e.g. BSIT-3109" required><datalist id="sections"></datalist></div>
+    </div>
+    <div class="field"><label for="addDate">Session date</label><input type="date" id="addDate" required></div>
+    <p class="alt"><button class="gedit" id="toBulk" type="button">Add several students at once</button></p>
     <div class="dacts"><button class="pb gh2" id="cancel" type="button">Cancel</button><button class="pb" id="submitBtn" type="submit">Save and mark</button></div>
   </form>
 </dialog>
@@ -90,8 +132,10 @@
   <form id="eForm" autocomplete="off">
     <h2>Edit student</h2><p>Changes apply to this student's record. Their attendance dates stay the same.</p>
     <div class="field"><label for="eName">Student name</label><input type="text" id="eName" maxlength="100" required></div>
-    <div class="field"><label for="eSubject">Subject name</label><input type="text" id="eSubject" maxlength="100" list="subjects" required></div>
-    <div class="field"><label for="eSection">Section</label><input type="text" id="eSection" maxlength="100" list="sections" required></div>
+    <div class="two">
+      <div class="field"><label for="eSubject">Subject name</label><input type="text" id="eSubject" maxlength="100" list="subjects" required></div>
+      <div class="field"><label for="eSection">Section</label><input type="text" id="eSection" maxlength="100" list="sections" required></div>
+    </div>
     <div class="field"><label for="eStart">Joined on (earlier sessions do not count)</label><input type="date" id="eStart"></div>
     <div class="dacts"><button class="pb danger del" id="eDelete" type="button">Delete student</button><button class="pb gh2" id="eCancel" type="button">Cancel</button><button class="pb" id="eSave" type="submit">Save changes</button></div>
   </form>
@@ -99,9 +143,11 @@
 <dialog id="bdlg">
   <form id="bForm" autocomplete="off">
     <h2>Add several students</h2><p>Paste one name per line. They are added to the subject and section below.</p>
-    <div class="field"><label for="bNames">Student names</label><textarea id="bNames" rows="7" placeholder="Juan Dela Cruz&#10;Maria Santos" required></textarea></div>
-    <div class="field"><label for="bSubject">Subject name</label><input type="text" id="bSubject" maxlength="100" list="subjects" required></div>
-    <div class="field"><label for="bSection">Section</label><input type="text" id="bSection" maxlength="100" list="sections" required></div>
+    <div class="field"><label for="bNames">Student names</label><textarea id="bNames" rows="6" placeholder="Juan Dela Cruz&#10;Maria Santos" required></textarea></div>
+    <div class="two">
+      <div class="field"><label for="bSubject">Subject name</label><input type="text" id="bSubject" maxlength="100" list="subjects" required></div>
+      <div class="field"><label for="bSection">Section</label><input type="text" id="bSection" maxlength="100" list="sections" required></div>
+    </div>
     <div class="field"><label for="bStatus">Mark them on the selected date as</label><select id="bStatus"><option value="none">Not marked yet</option><option value="present">Present</option><option value="late">Late</option><option value="absent">Absent</option><option value="excused">Excused</option></select></div>
     <div class="dacts"><button class="pb gh2" id="bCancel" type="button">Cancel</button><button class="pb" id="bSave" type="submit">Add students</button></div>
   </form>
@@ -114,7 +160,7 @@
 </dialog>
 <div class="toast" id="toast" role="status"></div>
 
-<script src="config.js?v=1"></script>
-<script src="app.js?v=1"></script>
+<script src="config.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
