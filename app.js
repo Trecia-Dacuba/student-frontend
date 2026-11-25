@@ -23,6 +23,10 @@ const same = (r, p) => r.student_name === p.student_name && r.subject_name === p
 const payload = (r, date) => ({ student_name: r.student_name, subject_name: r.subject_name, section: r.section, date });
 const shift = (k, n) => { const d = at(k); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0,10); };
 function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+// Attendance can only be recorded for today or earlier (no marking ahead of time)
+const FUTURE_MSG = 'Attendance can only be recorded for today or earlier dates';
+const isFuture = k => !!k && k > todayKey();
+function syncMax(){ const t = todayKey(); ['date','addDate','hAdd'].forEach(id => { const e = $(id); if (e) e.max = t; }); const n = $('next'); if (n) n.disabled = ($('date').value || t) >= t; }
 function setStatus(ok){ $('status').className = 'pill ' + (ok ? 'ok' : 'bad'); $('statusText').textContent = ok ? 'Database connected' : 'Offline'; }
 const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
 const THR = { pct: parseInt(store.get('tPct')) || 75, run: parseInt(store.get('tRun')) || 2 };
@@ -61,7 +65,7 @@ function updateSel(){
 
 const nameBtn = r => { const b = el('button','nm lnk',r.student_name); b.type = 'button'; b.title = 'View attendance history'; b.onclick = e => { e.stopPropagation(); openHist(r); }; return b; };
 const segCtl = (r, s, small, d = $('date').value) => { const g = el('div','sg' + (small ? ' sm' : '')); Object.keys(LABEL).forEach(k => { const b = el('button', k + (s === k ? ' on' : ''), LABEL[k]); b.type = 'button'; b.disabled = !d; b.title = s === k ? 'Click to clear' : 'Mark ' + LABEL[k].toLowerCase(); b.setAttribute('aria-pressed', s === k); b.onclick = e => { e.stopPropagation(); setSt(r, d, s === k ? '' : k); }; g.appendChild(b); }); return g; };
-function render(){
+function render(){ syncMax();
   if ($('hdlg').open) renderHist();
   const day = $('date').value, q = $('search').value.trim().toLowerCase();
   const subs = [...new Set(records.map(r => r.subject_name))].sort(), secs = [...new Set(records.map(r => r.section))].sort();
@@ -161,6 +165,7 @@ async function api(method, p, retried){
   return res.json();
 }
 async function act(method, p, o = {}){
+  if (method === 'POST' && p.status !== 'none' && isFuture(p.date)) { if (!o.quiet) toast(FUTURE_MSG); return false; }
   const ex = records.find(r => same(r, p)), prev = ex ? statusOn(ex, p.date) : '', want = method === 'POST' ? (p.status || 'present') : '';
   if (ex && prev === want) { if (!o.quiet) toast(want ? 'Already ' + want : 'Already cleared'); return false; }
   pending++;
@@ -234,9 +239,9 @@ async function copyAbsent(){
   });
   try { await navigator.clipboard.writeText(out.join('\n')); toast('Attendance report copied'); } catch(e){ toast('Copy is not available in this browser'); }
 }
-function setDay(k){ if (k) { $('date').value = k; render(); } }
+function setDay(k){ if (k) { if (isFuture(k)) { toast(FUTURE_MSG); k = todayKey(); } $('date').value = k; render(); } }
 function setView(v){ view = v; store.set('view', v); $('vCards').classList.toggle('on', v === 'cards'); $('vSheet').classList.toggle('on', v === 'sheet'); render(); }
-function openDlg(pre){ if (pre && typeof pre.subject === 'string'){ $('subject').value = pre.subject; $('section').value = pre.section; } else { if ($('fSubject').value) $('subject').value = $('fSubject').value; if ($('fSection').value) $('section').value = $('fSection').value; } $('addDate').value = $('date').value || todayKey(); $('dlg').showModal(); $('student').focus(); }
+function openDlg(pre){ syncMax(); if (pre && typeof pre.subject === 'string'){ $('subject').value = pre.subject; $('section').value = pre.section; } else { if ($('fSubject').value) $('subject').value = $('fSubject').value; if ($('fSection').value) $('section').value = $('fSection').value; } $('addDate').value = $('date').value || todayKey(); $('dlg').showModal(); $('student').focus(); }
 function setTheme(t){ document.documentElement.dataset.theme = t; store.set('theme', t); }
 const recorded = () => [...new Set(records.flatMap(rec))].sort();
 
@@ -327,12 +332,13 @@ $('cancel').onclick = () => $('dlg').close();
 $('dlg').addEventListener('click', e => { if (e.target === $('dlg')) $('dlg').close(); });
 $('dataForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const day = $('addDate').value; if (!day) return toast('Pick a date for this record');
+  const day = $('addDate').value; if (!day) return toast('Pick a date for this record'); if (isFuture(day)) return toast(FUTURE_MSG);
   const btn = $('submitBtn'), label = btn.textContent; btn.disabled = true; btn.textContent = 'Saving…';
   const ok = await act('POST', { student_name: $('student').value.trim(), subject_name: $('subject').value.trim(), section: $('section').value.trim(), date: day });
   btn.disabled = false; btn.textContent = label;
   if (ok){ $('student').value = ''; $('dlg').close(); if (day !== $('date').value) setDay(day); }
 });
+$('date').addEventListener('change', () => { if (isFuture($('date').value)) { toast(FUTURE_MSG); $('date').value = todayKey(); } });
 ['date','fSection','fSubject'].forEach(id => $(id).addEventListener('change', render));
 ['group','sort'].forEach(id => $(id).addEventListener('change', () => { store.set(id, $(id).value); render(); }));
 $('search').addEventListener('input', render);

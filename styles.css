@@ -384,3 +384,4 @@ dialog{border-radius:18px}
 :root[data-theme="dark"] .rail .pb.main{color:#04201c!important}
 .gh{border-bottom:0;padding-bottom:0}
 .rail .pb:disabled{background:rgba(255,255,255,.05)!important;color:var(--rail-muted)!important;border:1px solid var(--rail-line)!important;opacity:1}
+.nav:disabled{opacity:.35;cursor:not-allowed}
